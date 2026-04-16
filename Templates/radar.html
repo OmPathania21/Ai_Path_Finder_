@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Radar Evade — DLS AI | Ai Path Finder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;background:#020d0a;color:#fff;font-family:'Inter',sans-serif;overflow:hidden}
+    body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;
+      background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(74,222,128,.05) 0%,transparent 55%),#020d0a}
+    .topbar{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:680px;padding:8px 4px}
+    .back-btn{text-decoration:none;color:#4ade80;font-size:.75rem;font-weight:600;border:1px solid rgba(74,222,128,.3);padding:5px 12px;border-radius:8px;transition:all .2s}
+    .back-btn:hover{border-color:#4ade80;background:rgba(74,222,128,.07)}
+    .game-title{font-family:'Orbitron',sans-serif;font-size:1.05rem;font-weight:900;letter-spacing:2px;background:linear-gradient(90deg,#4ade80,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .algo-badge{font-size:.65rem;font-weight:700;letter-spacing:1px;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:#4ade80;padding:4px 10px;border-radius:12px}
+    .hud{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:680px;padding:0 4px 6px;gap:6px}
+    .hud-item{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1}
+    .hud-label{font-size:.56rem;text-transform:uppercase;letter-spacing:1px;color:#1d4d38}
+    .hud-val{font-family:'Orbitron',sans-serif;font-size:.95rem;font-weight:700}
+    #canvas{display:block;image-rendering:pixelated;box-shadow:0 0 40px rgba(74,222,128,.06)}
+    .status-row{display:flex;align-items:center;gap:10px;font-size:.65rem;color:#4b5563;margin-top:4px;width:100%;max-width:680px;justify-content:center}
+    .status-badge{padding:3px 10px;border-radius:8px;font-size:.65rem;font-weight:700;letter-spacing:.5px;transition:all .3s}
+    .status-badge.clear{background:rgba(74,222,128,.12);color:#4ade80;border:1px solid rgba(74,222,128,.3)}
+    .status-badge.detected{background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.4);animation:flashRed .4s ease infinite}
+    @keyframes flashRed{0%,100%{opacity:1}50%{opacity:.4}}
+    .depth-track{display:flex;align-items:center;gap:6px;font-size:.63rem;color:#4b5563}
+    .depth-fill{height:3px;width:80px;background:rgba(74,222,128,.15);border-radius:2px;overflow:hidden}
+    .depth-inner{height:100%;background:linear-gradient(90deg,#4ade80,#22d3ee);border-radius:2px;transition:width .5s}
+    .instructions{font-size:.64rem;color:#4b5563;text-align:center}
+    .instructions span{color:#1d4d38}
+    .overlay{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(0,0,0,.93);backdrop-filter:blur(8px);z-index:10}
+    .overlay.hidden{display:none}
+    .overlay-icon{font-size:3.5rem}
+    .overlay-title{font-family:'Orbitron',sans-serif;font-size:1.8rem;font-weight:900}
+    .overlay-title.grn{background:linear-gradient(90deg,#4ade80,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .overlay-title.red{background:linear-gradient(90deg,#ef4444,#dc2626);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .overlay-sub{font-size:.88rem;color:#6b7280;text-align:center;line-height:1.6;max-width:420px}
+    .overlay-btn{padding:12px 30px;border-radius:10px;border:none;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:.82rem;font-weight:700;transition:all .2s;letter-spacing:.5px;margin-top:6px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#000}
+    .overlay-btn:hover{transform:translateY(-2px);box-shadow:0 0 24px rgba(74,222,128,.55)}
+    .algo-explain{font-size:.7rem;color:#4ade80;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.28);padding:6px 14px;border-radius:10px;letter-spacing:.4px;text-align:center;max-width:380px}
+    .dls-timeline{display:flex;flex-direction:column;gap:4px;font-size:.68rem;color:#6b7280;padding:6px 14px;border-radius:8px;border:1px solid rgba(74,222,128,.15);background:rgba(74,222,128,.04)}
+    .dls-row{display:flex;justify-content:space-between;gap:16px}
+    .dls-row span:last-child{color:#4ade80}
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/" class="back-btn">← Ai Path Finder</a>
+  <div class="game-title">RADAR EVADE</div>
+  <div class="algo-badge">DLS AI</div>
+</div>
+
+<div class="hud">
+  <div class="hud-item"><div class="hud-label">Survive</div><div class="hud-val" id="hud-time" style="color:#4ade80">60</div></div>
+  <div class="hud-item"><div class="hud-label">Depth Limit</div><div class="hud-val" id="hud-depth" style="color:#22d3ee">5</div></div>
+  <div class="hud-item"><div class="hud-label">Max Depth</div><div class="hud-val" id="hud-maxd" style="color:#fbbf24">19</div></div>
+  <div class="hud-item"><div class="hud-label">Distance</div><div class="hud-val" id="hud-dist" style="color:#4ade80">—</div></div>
+</div>
+
+<canvas id="canvas"></canvas>
+
+<div class="status-row">
+  <div class="status-badge clear" id="detect-badge">📡 SCANNING</div>
+  <div class="depth-track">
+    Depth <div class="depth-fill"><div class="depth-inner" id="depth-bar" style="width:26%"></div></div> grows every 10s
+  </div>
+</div>
+<div class="instructions" style="margin-top:3px">
+  <span>WASD</span> to move · Stay outside <span>scan depth</span> · <span>DLS depth limit grows</span> every 10s — survive 60s!
+</div>
+
+<!-- Overlays -->
+<div class="overlay" id="start-overlay">
+  <div class="overlay-icon">📡</div>
+  <div class="overlay-title grn">RADAR EVADE</div>
+  <div class="overlay-sub">A scanner drone uses <strong style="color:#4ade80">Depth-Limited Search</strong> to find you. It can only detect you within its depth limit — but the limit grows over time! The green rings show its current scan range.</div>
+  <div class="algo-explain">🔍 DLS = BFS/DFS limited to depth N<br/>If you're beyond depth N → scanner returns NULL & wanders<br/>Rings show exactly how far the scanner can search!</div>
+  <div class="dls-timeline">
+    <div class="dls-row"><span>0s — 10s</span><span>Depth limit: 5</span></div>
+    <div class="dls-row"><span>10s — 20s</span><span>Depth limit: 7</span></div>
+    <div class="dls-row"><span>20s — 30s</span><span>Depth limit: 9</span></div>
+    <div class="dls-row"><span>30s — 40s</span><span>Depth limit: 11</span></div>
+    <div class="dls-row"><span>40s — 50s</span><span>Depth limit: 13</span></div>
+    <div class="dls-row"><span>50s — 60s</span><span>Depth limit: 15</span></div>
+  </div>
+  <button class="overlay-btn" id="start-btn">▶ EVADE SCANNER</button>
+</div>
+
+<div class="overlay hidden" id="win-overlay">
+  <div class="overlay-icon">🏆</div>
+  <div class="overlay-title grn">EVADED!</div>
+  <div class="overlay-sub">You survived 60 seconds as the DLS scanner's depth limit grew from 5 to 15. You were always just one step ahead!</div>
+  <button class="overlay-btn" id="win-btn">PLAY AGAIN</button>
+</div>
+
+<div class="overlay hidden" id="dead-overlay">
+  <div class="overlay-icon">📡</div>
+  <div class="overlay-title red">DETECTED!</div>
+  <div class="overlay-sub" id="dead-sub">The DLS scanner's growing depth limit finally found you within its search radius.</div>
+  <button class="overlay-btn" id="dead-btn">TRY AGAIN</button>
+</div>
+
+<script>
+const ROWS=16, COLS=28;
+const CS=Math.min(Math.floor((window.innerHeight-195)/ROWS), Math.floor((window.innerWidth-16)/COLS), 32);
+const canvas=document.getElementById('canvas');
+canvas.width=COLS*CS; canvas.height=ROWS*CS;
+const ctx=canvas.getContext('2d');
+const MAX_DEPTH_LIMIT = 19;
+
+// ── DLS (Depth-Limited Search) ────────────────────────────────────────────────
+// DFS limited to a max depth. Returns path if found within limit, null = cutoff.
+// Key behavior: returns NULL if goal is deeper than limit — scanner then wanders!
+// As depth limit grows, more of the grid becomes "scannable".
+function dls(grid, sr, sc, er, ec, limit) {
+  const stack   = [[sr, sc, 0]];
+  const visited = new Map([[`${sr},${sc}`, 0]]);  // key -> depth
+  const parent  = new Map();
+
+  while (stack.length) {
+    const [r, c, depth] = stack.pop();
+
+    if (r===er && c===ec) {
+      const path=[]; let key=`${er},${ec}`, sk=`${sr},${sc}`;
+      while (key !== sk && parent.has(key)) {
+        const [pr,pc]=key.split(',').map(Number); path.unshift([pr,pc]);
+        key = parent.get(key);
+      }
+      return path;    // FOUND within depth limit!
+    }
+
+    if (depth >= limit) continue;  // CUTOFF — depth exceeded!
+
+    for (const [dr,dc] of [[1,0],[-1,0],[0,1],[0,-1]]) {
+      const nr=r+dr, nc=c+dc;
+      if (nr<0||nr>=ROWS||nc<0||nc>=COLS||grid[nr][nc]===1) continue;
+      const k=`${nr},${nc}`;
+      const ed = visited.get(k);
+      if (ed !== undefined && ed <= depth+1) continue;
+      visited.set(k, depth+1); parent.set(k,`${r},${c}`);
+      stack.push([nr, nc, depth+1]);
+    }
+  }
+  return null;   // NULL = goal not found within depth limit
+}
+
+// Random wander step for scanner (when DLS returns null)
+function randomStep(grid, r, c) {
+  const dirs=[[-1,0],[1,0],[0,-1],[0,1]].filter(([dr,dc])=>{
+    const nr=r+dr,nc=c+dc;
+    return nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&grid[nr][nc]===0;
+  });
+  if (!dirs.length) return [r,c];
+  const [dr,dc]=dirs[Math.floor(Math.random()*dirs.length)];
+  return [r+dr, c+dc];
+}
+
+function genGrid() {
+  const g = Array.from({length:ROWS}, ()=>Array(COLS).fill(0));
+  for (let r=0;r<ROWS;r++) { g[r][0]=1; g[r][COLS-1]=1; }
+  for (let c=0;c<COLS;c++) { g[0][c]=1; g[ROWS-1][c]=1; }
+  for (let r=2;r<ROWS-2;r++) for (let c=2;c<COLS-2;c++) {
+    if (c<5&&r>=ROWS/2-2&&r<=ROWS/2+2) continue;
+    if (c>COLS-6&&r>=ROWS/2-2&&r<=ROWS/2+2) continue;
+    if (Math.random()<0.2) g[r][c]=1;
+  }
+  return g;
+}
+
+let grid, player, scanner, scanPath, detected, scanPulse;
+let gameActive, timer, dlsInterval, timeLeft, frameCount, depthLimit;
+const DEPTH_SCHEDULE = [5,5,7,7,9,9,11,11,13,13,15,15,17,17,19,19,19,19,19,19];
+
+function initGame() {
+  grid=genGrid();
+  player={r:Math.floor(ROWS/2),c:2};
+  scanner={r:Math.floor(ROWS/2),c:COLS-3};
+  scanPath=[]; detected=false; scanPulse=0;
+  timeLeft=60; gameActive=true; frameCount=0; depthLimit=5;
+  runDLS(); updateHUD();
+}
+
+function runDLS() {
+  if (!gameActive) return;
+  const result = dls(grid, scanner.r, scanner.c, player.r, player.c, depthLimit);
+  detected = result !== null;   // null = player beyond depth limit!
+  scanPath = result || [];
+  document.getElementById('detect-badge').className = `status-badge ${detected ? 'detected' : 'clear'}`;
+  document.getElementById('detect-badge').textContent = detected ? '🚨 DETECTED!' : '📡 SCANNING';
+}
+
+function updateHUD() {
+  const te=document.getElementById('hud-time');
+  te.textContent=timeLeft; te.style.color=timeLeft<=10?'#ef4444':timeLeft<=20?'#fbbf24':'#4ade80';
+  document.getElementById('hud-depth').textContent = depthLimit;
+  document.getElementById('hud-maxd').textContent  = MAX_DEPTH_LIMIT;
+  document.getElementById('depth-bar').style.width = (depthLimit/MAX_DEPTH_LIMIT*100)+'%';
+  const d=Math.abs(player.r-scanner.r)+Math.abs(player.c-scanner.c);
+  const de=document.getElementById('hud-dist');
+  de.textContent=d; de.style.color=d<=depthLimit?'#ef4444':d<=depthLimit+3?'#fbbf24':'#4ade80';
+}
+
+function movePlayer(dr,dc) {
+  if (!gameActive) return;
+  const nr=player.r+dr, nc=player.c+dc;
+  if (nr<0||nr>=ROWS||nc<0||nc>=COLS||grid[nr][nc]===1) return;
+  player.r=nr; player.c=nc; checkCatch(); updateHUD();
+}
+
+function moveScanner() {
+  if (!gameActive) return;
+  if (detected && scanPath.length>0) {
+    const [nr,nc]=scanPath.shift();
+    if (grid[nr][nc]!==1) { scanner.r=nr; scanner.c=nc; }
+  } else {
+    // DLS returned null — scanner wanders randomly
+    const [nr,nc]=randomStep(grid, scanner.r, scanner.c);
+    scanner.r=nr; scanner.c=nc;
+  }
+  checkCatch();
+}
+
+function checkCatch() { if(scanner.r===player.r&&scanner.c===player.c) endGame(false); }
+
+function draw() {
+  ctx.fillStyle='#020d0a'; ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // Grid
+  for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) {
+    const x=c*CS, y=r*CS;
+    if (grid[r][c]===1) {
+      ctx.fillStyle='#091a14'; ctx.fillRect(x,y,CS,CS);
+      ctx.strokeStyle='rgba(20,70,50,0.4)'; ctx.lineWidth=.5;
+      ctx.strokeRect(x+.5,y+.5,CS-1,CS-1);
+    } else {
+      ctx.fillStyle='#041009'; ctx.fillRect(x,y,CS,CS);
+      ctx.strokeStyle='rgba(74,222,128,0.04)'; ctx.lineWidth=.4;
+      ctx.strokeRect(x,y,CS,CS);
+    }
+  }
+
+  // DLS scan rings — concentric rings to visualize depth limit!
+  // This is the KEY visual: rings show exactly how far DLS can "see"
+  scanPulse = (scanPulse + 0.04) % (Math.PI*2);
+  const pulse = 0.55 + Math.sin(scanPulse)*0.45;   // 0.1..1.0
+
+  for (let d=1; d<=depthLimit; d++) {
+    const isOuter = d===depthLimit;
+    const alpha   = isOuter ? 0.22*pulse : 0.04 + (d/depthLimit)*0.06;
+    const color   = detected ? `rgba(239,68,68,${alpha})` : `rgba(74,222,128,${alpha})`;
+    ctx.strokeStyle = color;
+    ctx.lineWidth   = isOuter ? 1.5 : 0.6;
+
+    // Draw all cells at Manhattan distance d from scanner
+    for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) {
+      if (Math.abs(r-scanner.r)+Math.abs(c-scanner.c)===d && grid[r][c]===0) {
+        ctx.strokeRect(c*CS+1, r*CS+1, CS-2, CS-2);
+      }
+    }
+  }
+
+  // DLS path (when locked on)
+  if (detected && scanPath.length>0) {
+    scanPath.forEach(([r,c],i) => {
+      ctx.fillStyle=`rgba(239,68,68,${0.08+i/Math.max(scanPath.length,1)*0.2})`;
+      ctx.fillRect(c*CS+2, r*CS+2, CS-4, CS-4);
+    });
+  }
+
+  // Scanner — green glowing drone
+  const sx=scanner.c*CS, sy=scanner.r*CS;
+  const scanColor = detected ? '#ef4444' : '#4ade80';
+  const glowColor = detected ? 'rgba(239,68,68,.9)' : 'rgba(74,222,128,.9)';
+  ctx.shadowColor=glowColor; ctx.shadowBlur=20;
+  ctx.fillStyle=scanColor; ctx.fillRect(sx+2,sy+2,CS-4,CS-4);
+  ctx.shadowBlur=0;
+  // Antenna
+  if (CS>=14) {
+    ctx.fillStyle='rgba(255,255,255,.6)';
+    ctx.fillRect(sx+CS/2-1,sy,2,CS*.3);
+    ctx.beginPath();
+    ctx.arc(sx+CS/2,sy, CS*.12, 0, Math.PI*2);
+    ctx.fillStyle=scanColor; ctx.fill();
+  }
+
+  // Player — orange, evading
+  const px=player.c*CS, py=player.r*CS;
+  ctx.shadowColor='rgba(249,115,22,.9)'; ctx.shadowBlur=18;
+  ctx.fillStyle='#f97316'; ctx.fillRect(px+2,py+2,CS-4,CS-4);
+  ctx.shadowBlur=0;
+  ctx.fillStyle='rgba(255,255,255,.5)'; const dot=Math.max(2,CS*.22);
+  ctx.fillRect(px+(CS-dot)/2,py+(CS-dot)/2,dot,dot);
+
+  // Detection flash overlay
+  if (detected) {
+    ctx.fillStyle=`rgba(239,68,68,${0.04*pulse})`;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+}
+
+let rafId;
+function loop() {
+  if (!gameActive) return;
+  frameCount++;
+  if (frameCount%24===0) moveScanner();
+  draw(); rafId=requestAnimationFrame(loop);
+}
+
+function endGame(won) {
+  gameActive=false; clearInterval(timer); clearInterval(dlsInterval);
+  cancelAnimationFrame(rafId);
+  setTimeout(()=>document.getElementById(won?'win-overlay':'dead-overlay').classList.remove('hidden'),300);
+}
+
+document.addEventListener('keydown', e => {
+  const m={w:[-1,0],W:[-1,0],ArrowUp:[-1,0],s:[1,0],S:[1,0],ArrowDown:[1,0],
+           a:[0,-1],A:[0,-1],ArrowLeft:[0,-1],d:[0,1],D:[0,1],ArrowRight:[0,1]};
+  if(m[e.key]){const[dr,dc]=m[e.key];movePlayer(dr,dc);e.preventDefault();}
+});
+
+function startGame() {
+  ['start-overlay','win-overlay','dead-overlay'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  clearInterval(timer); clearInterval(dlsInterval); cancelAnimationFrame(rafId);
+  initGame();
+  timer = setInterval(()=>{
+    if (!gameActive) return;
+    timeLeft--;
+    depthLimit = DEPTH_SCHEDULE[Math.max(0, Math.min(60-timeLeft, DEPTH_SCHEDULE.length-1))];
+    updateHUD();
+    if (timeLeft<=0) endGame(true);
+  }, 1000);
+  dlsInterval = setInterval(()=>{ if(gameActive) runDLS(); }, 900);
+  loop();
+}
+
+document.getElementById('start-btn').addEventListener('click',startGame);
+document.getElementById('win-btn').addEventListener('click', startGame);
+document.getElementById('dead-btn').addEventListener('click',startGame);
+initGame(); draw();
+</script>
+</body>
+</html>
