@@ -1,10 +1,10 @@
 # 🧠 PathMind: AI Pathfinding Visualizer
 
-**PathMind** is more than just a tool; it's an interactive laboratory for exploring how artificial intelligence "thinks" about space and navigation. By transforming abstract pathfinding algorithms into high-speed visual animations, PathMind makes it possible to see the invisible trade-offs between speed, memory, and accuracy.
+**PathMind** is an interactive laboratory for exploring how artificial intelligence "thinks" about space and navigation. By transforming abstract pathfinding algorithms into high-speed visual animations, PathMind makes it possible to see the invisible trade-offs between speed, memory, and accuracy.
 
-Whether you're testing the surgical precision of **A*** or the brute-force curiosity of **Breadth-First Search**, PathMind provides a cinematic environment to build complex mazes, create obstacles, and watch AI find its way home.
+Visualize algorithm behavior across multiple game modes—from classic maze solving with Pacman to multi-agent pursuit scenarios with Zombie hunts, terrain analysis, and strategic radar chases.
 
-![PathMind Demo](https://ai-patha-finder.vercel.app/)
+![PathMind Demo](https://ai-path-finder-zeta.vercel.app/)
 
 ## ✨ Core Features
 
@@ -16,20 +16,24 @@ Whether you're testing the surgical precision of **A*** or the brute-force curio
 - **Greedy Best-First**: Fast heuristic-only search focused on speed over optimality.
 - **Depth-Limited Search (DLS)**: DFS with a hard depth cutoff.
 
-### 🗺️ Intelligent Maze Generation
-- **Animated Carving**: Watch in real-time as the **Recursive Division** algorithm snakes through walls.
-- **Random Distribution**: Burst-style generation of scattered obstacles.
-- **Spiral Corridor**: Generates a long, narrow path to test algorithm efficiency.
+### 🎮 Interactive Game Modes
+- **Maze** (index): Classic grid-based pathfinding with interactive wall painting.
+- **Pacman**: Chase scenario with AI agent pursuit.
+- **Zombie**: Multi-agent survival—escape from hostile entities.
+- **Dungeon**: Underground labyrinth exploration with complex corridors.
+- **Terrain**: Cost-weighted pathfinding across varied terrain types.
+- **Fox Chase**: Strategic predator-prey dynamics with AI opponent.
+- **Radar**: Real-time tracking and navigation with sensor feedback.
 
 ### 🎨 Premium Visuals
-- **Brutalist Design System**: A clean, high-contrast UI with Light and Dark mode support.
-- **Gradient Path Tracing**: Final paths are highlighted with a dynamic color gradient (Green → Amber → Red).
+- **Brutalist Design System**: Clean, high-contrast UI with Light and Dark mode support.
+- **Gradient Path Tracing**: Final paths highlighted with dynamic color gradient (Green → Amber → Red).
 - **Interactive Wall Painting**: Click and drag to draw walls or erase them.
 - **Animated Generation**: Walls and passages burst into existence with smooth CSS transitions.
 
 ### 📊 Real-Time Analytics
-- **Coverage Chart**: Visual bar charts showing the percentage of the grid explored.
-- **Path Efficiency**: Measures how targeted the search was vs. how many nodes were wasted.
+- **Coverage Chart**: Visual bar charts showing grid exploration percentage.
+- **Path Efficiency**: Measures search targeting vs. wasted node exploration.
 - **Live Stats**: Node count, path length, and execution time (ms) tracking.
 
 ---
@@ -68,18 +72,24 @@ Whether you're testing the surgical precision of **A*** or the brute-force curio
    ```
 
 4. **Open in Browser**:
-   Navigate to `http://127.0.0.1:5000`
+   Navigate to `http://127.0.0.1:5002`
 
 ---
 
 ## 📂 Project Structure
 
 ```text
-├── app.py              # Flask server and search algorithm logic
-├── templates/
-│   └── index.html      # Main UI (CSS, HTML, JS)
-├── requirements.txt    # Python dependencies
-├── vercel.json         # Vercel deployment configuration
+├── app.py              # Flask server and search algorithm logic (6 algorithms)
+├── Templates/          # Frontend game mode UIs
+│   ├── index.html      # Main maze solver interface
+│   ├── pacman.html     # Pacman chase mode
+│   ├── zombie.html     # Zombie survival mode
+│   ├── dungeon.html    # Dungeon exploration
+│   ├── terrain.html    # Terrain pathfinding
+│   ├── foxchase.html   # Fox chase game
+│   └── radar.html      # Radar tracking mode
+├── requirements.txt    # Python dependencies (Flask 3.0.0)
+├── vercel.json         # Vercel deployment configuration (Python runtime)
 └── README.md           # You are here
 ```
 

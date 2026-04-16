@@ -3,7 +3,8 @@ from collections import deque
 import heapq, time, sys
 sys.setrecursionlimit(1000)
 
-app = Flask(__name__)
+# Explicit template folder avoids case-sensitivity issues on Linux hosts.
+app = Flask(__name__, template_folder='Templates')
 
 
 DIRS = [(-1, 0), (1, 0), (0, -1), (0, 1)]
