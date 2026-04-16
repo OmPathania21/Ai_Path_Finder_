@@ -381,6 +381,20 @@
         <div class="game-card-desc">Ghosts chase you using BFS shortest-path AI</div>
         <a href="/pacman" class="play-btn">▶ Play Game</a>
       </div>
+      <div class="game-card" id="game-card-dfs">
+        <div class="game-card-icon">🕯️</div>
+        <div class="game-card-algo">DFS</div>
+        <div class="game-card-name">CAVE STALKER</div>
+        <div class="game-card-desc">Shadow creature hunts deep using DFS stack</div>
+        <a href="/dungeon" class="play-btn">▶ Play Game</a>
+      </div>
+      <div class="game-card" id="game-card-ucs">
+        <div class="game-card-icon">⚙️</div>
+        <div class="game-card-algo">UCS</div>
+        <div class="game-card-name">COST RUNNER</div>
+        <div class="game-card-desc">Robot tracks via cheapest terrain path</div>
+        <a href="/terrain" class="play-btn">▶ Play Game</a>
+      </div>
       <div class="game-card" id="game-card-astar">
         <div class="game-card-icon">🧟</div>
         <div class="game-card-algo">A*</div>
@@ -388,9 +402,23 @@
         <div class="game-card-desc">Zombie hunts you with A* intelligence. Survive 60s!</div>
         <a href="/zombie" class="play-btn">▶ Play Game</a>
       </div>
-      <div class="game-hint" id="game-hint">
+      <div class="game-card" id="game-card-greedy">
+        <div class="game-card-icon">🦊</div>
+        <div class="game-card-algo">Greedy</div>
+        <div class="game-card-name">FOX CHASE</div>
+        <div class="game-card-desc">Fox rushes you greedily (h only). Collect 5 rabbits!</div>
+        <a href="/foxchase" class="play-btn">▶ Play Game</a>
+      </div>
+      <div class="game-card" id="game-card-dls">
+        <div class="game-card-icon">📡</div>
+        <div class="game-card-algo">DLS</div>
+        <div class="game-card-name">RADAR EVADE</div>
+        <div class="game-card-desc">Scanner depth-limit grows. Stay out of range!</div>
+        <a href="/radar" class="play-btn">▶ Play Game</a>
+      </div>
+      <div class="game-hint" id="game-hint" style="display:none">
         <div class="game-hint-icon">🎮</div>
-        <div class="game-hint-text">Select <strong>BFS</strong> or <strong>A*</strong> to unlock a fun game!</div>
+        <div class="game-hint-text">Select an algorithm to play its game!</div>
       </div>
     </div>
 
@@ -810,9 +838,10 @@ canvas.addEventListener('touchend',()=>isMouseDown=false);
 
 // ── Algo Tabs ─────────────────────────────────────────────────────────────────
 function updateGameCard(algo){
-  document.getElementById('game-card-bfs').classList.toggle('visible',   algo==='bfs');
-  document.getElementById('game-card-astar').classList.toggle('visible', algo==='astar');
-  document.getElementById('game-hint').style.display=(algo==='bfs'||algo==='astar')?'none':'flex';
+  ['bfs','dfs','ucs','astar','greedy','dls'].forEach(a=>{
+    document.getElementById(`game-card-${a}`).classList.toggle('visible', a===algo);
+  });
+  document.getElementById('game-hint').style.display='none';
 }
 document.querySelectorAll('.algo-tab').forEach(tab=>{
   tab.addEventListener('click',()=>{

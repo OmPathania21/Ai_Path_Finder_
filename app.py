@@ -3,8 +3,7 @@ from collections import deque
 import heapq, time, sys
 sys.setrecursionlimit(1000)
 
-# Explicit template folder avoids case-sensitivity issues on Linux hosts.
-app = Flask(__name__, template_folder='Templates')
+app = Flask(__name__)
 
 
 DIRS = [(-1, 0), (1, 0), (0, -1), (0, 1)]
@@ -230,6 +229,26 @@ def pacman():
 @app.route('/zombie')
 def zombie():
     return render_template('zombie.html')
+
+
+@app.route('/dungeon')
+def dungeon():
+    return render_template('dungeon.html')
+
+
+@app.route('/terrain')
+def terrain():
+    return render_template('terrain.html')
+
+
+@app.route('/foxchase')
+def foxchase():
+    return render_template('foxchase.html')
+
+
+@app.route('/radar')
+def radar():
+    return render_template('radar.html')
 
 
 if __name__ == '__main__':
