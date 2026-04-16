@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Fox Chase — Greedy AI | Ai Path Finder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;background:#060e04;color:#fff;font-family:'Inter',sans-serif;overflow:hidden}
+    body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;
+      background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(249,115,22,.05) 0%,transparent 60%),#060e04}
+    .topbar{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:640px;padding:8px 4px}
+    .back-btn{text-decoration:none;color:#f97316;font-size:.75rem;font-weight:600;border:1px solid rgba(249,115,22,.3);padding:5px 12px;border-radius:8px;transition:all .2s}
+    .back-btn:hover{border-color:#f97316;background:rgba(249,115,22,.08)}
+    .game-title{font-family:'Orbitron',sans-serif;font-size:1.05rem;font-weight:900;letter-spacing:2px;background:linear-gradient(90deg,#f97316,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .algo-badge{font-size:.65rem;font-weight:700;letter-spacing:1px;background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.3);color:#f97316;padding:4px 10px;border-radius:12px}
+    .hud{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:640px;padding:0 4px 8px}
+    .hud-item{display:flex;flex-direction:column;align-items:center;gap:2px}
+    .hud-label{font-size:.57rem;text-transform:uppercase;letter-spacing:1px;color:#6b7280}
+    .hud-val{font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:700;color:#f97316}
+    #canvas{display:block;image-rendering:pixelated;box-shadow:0 0 40px rgba(249,115,22,.06)}
+    .instructions{display:flex;gap:8px;align-items:center;font-size:.64rem;color:#4b5563;margin-top:5px;width:100%;max-width:640px;justify-content:center}
+    .instructions span{color:#78716c}
+    .overlay{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(0,0,0,.93);backdrop-filter:blur(8px);z-index:10}
+    .overlay.hidden{display:none}
+    .overlay-icon{font-size:3.5rem}
+    .overlay-title{font-family:'Orbitron',sans-serif;font-size:1.8rem;font-weight:900}
+    .overlay-title.org{background:linear-gradient(90deg,#f97316,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .overlay-title.red{background:linear-gradient(90deg,#ef4444,#dc2626);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .overlay-sub{font-size:.88rem;color:#6b7280;text-align:center;line-height:1.6;max-width:400px}
+    .overlay-btn{padding:12px 30px;border-radius:10px;border:none;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:.82rem;font-weight:700;transition:all .2s;letter-spacing:.5px;margin-top:6px;background:linear-gradient(135deg,#f97316,#d97706);color:#000}
+    .overlay-btn:hover{transform:translateY(-2px);box-shadow:0 0 24px rgba(249,115,22,.55)}
+    .algo-explain{font-size:.7rem;color:#f97316;background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.3);padding:5px 14px;border-radius:10px;letter-spacing:.4px;text-align:center;max-width:360px}
+    .speed-bar{display:flex;align-items:center;gap:8px;font-size:.63rem;color:#6b7280}
+    .speed-pips{display:flex;gap:3px}
+    .pip{width:8px;height:8px;border-radius:2px;background:rgba(249,115,22,.25)}
+    .pip.lit{background:#f97316;box-shadow:0 0 4px rgba(249,115,22,.6)}
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/" class="back-btn">← Ai Path Finder</a>
+  <div class="game-title">FOX CHASE</div>
+  <div class="algo-badge">Greedy AI</div>
+</div>
+
+<div class="hud">
+  <div class="hud-item"><div class="hud-label">Rabbits</div><div class="hud-val" id="hud-rabbits">0/5</div></div>
+  <div class="hud-item"><div class="hud-label">Fox Speed</div><div class="speed-bar"><div class="speed-pips" id="speed-pips"></div></div></div>
+  <div class="hud-item"><div class="hud-label">h(n) Dist</div><div class="hud-val" id="hud-dist" style="color:#22d3ee">—</div></div>
+</div>
+
+<canvas id="canvas"></canvas>
+
+<div class="instructions">
+  <span>WASD / Arrows</span> to move &nbsp;·&nbsp;
+  Collect <span>5 rabbits 🐇</span> to win &nbsp;·&nbsp;
+  <span>Greedy fox</span> always rushes toward you — use walls to trap it!
+</div>
+
+<!-- Overlays -->
+<div class="overlay" id="start-overlay">
+  <div class="overlay-icon">🦊</div>
+  <div class="overlay-title org">FOX CHASE</div>
+  <div class="overlay-sub">A cunning fox uses <strong style="color:#f97316">Greedy Best-First Search</strong> to hunt you. It always moves toward the cell closest to you by Manhattan distance — but walls can trip it up!</div>
+  <div class="algo-explain">🦊 Greedy: uses only h(n), NO path cost g(n)<br/>Fast but gets trapped — use that against it!</div>
+  <button class="overlay-btn" id="start-btn">▶ START CHASE</button>
+</div>
+
+<div class="overlay hidden" id="win-overlay">
+  <div class="overlay-icon">🐇</div>
+  <div class="overlay-title org">ALL RABBITS!</div>
+  <div class="overlay-sub">You collected all 5 rabbits while outwitting the Greedy fox. You exploited the fox's weakness — it got stuck behind walls!</div>
+  <button class="overlay-btn" id="win-btn">PLAY AGAIN</button>
+</div>
+
+<div class="overlay hidden" id="dead-overlay">
+  <div class="overlay-icon">🦊</div>
+  <div class="overlay-title red">CAUGHT!</div>
+  <div class="overlay-sub">The Greedy fox's relentless h(n) pursuit found an open path straight to you!</div>
+  <button class="overlay-btn" id="dead-btn">TRY AGAIN</button>
+</div>
+
+<script>
+const ROWS=18, COLS=26;
+const CS=Math.min(Math.floor((window.innerHeight-172)/ROWS), Math.floor((window.innerWidth-16)/COLS), 26);
+const canvas=document.getElementById('canvas');
+canvas.width=COLS*CS; canvas.height=ROWS*CS;
+const ctx=canvas.getContext('2d');
+
+// ── Greedy Best-First Search ──────────────────────────────────────────────────
+// Key behavior: priority queue ordered by h(n) = Manhattan distance to goal ONLY.
+// No g(n) — ignores how far it has traveled. Fast but can take suboptimal paths.
+// Notably: gets trapped behind walls and has to backtrack (visible in orange trail).
+function greedyBFS(grid, sr, sc, er, ec) {
+  const h    = (r,c) => Math.abs(r-er) + Math.abs(c-ec);
+  const pq   = [[h(sr,sc), sr, sc]];
+  const visited = new Set([`${sr},${sc}`]);
+  const parent  = new Map();
+
+  while (pq.length) {
+    pq.sort((a,b) => a[0]-b[0]);           // sort by heuristic ONLY — greedy!
+    const [, r, c] = pq.shift();
+
+    if (r===er && c===ec) {
+      const path=[]; let key=`${er},${ec}`, sk=`${sr},${sc}`;
+      while (key !== sk) {
+        const [pr,pc]=key.split(',').map(Number); path.unshift([pr,pc]);
+        key = parent.get(key) || sk;
+      }
+      return path;
+    }
+
+    for (const [dr,dc] of [[-1,0],[1,0],[0,-1],[0,1]]) {
+      const nr=r+dr, nc=c+dc;
+      if (nr<0||nr>=ROWS||nc<0||nc>=COLS||grid[nr][nc]===1) continue;
+      const k=`${nr},${nc}`;
+      if (visited.has(k)) continue;
+      visited.add(k); parent.set(k,`${r},${c}`);
+      pq.push([h(nr,nc), nr, nc]);
+    }
+  }
+  return [];
+}
+
+// ── Grid / State ──────────────────────────────────────────────────────────────
+let grid, rabbits, player, fox, foxPath, gameActive, greedyInterval, frameCount;
+let collected=0, foxFrameInterval=18;  // gets faster each catch
+
+function genGrid() {
+  const g = Array.from({length:ROWS}, ()=>Array(COLS).fill(0));
+  for (let r=0;r<ROWS;r++) { g[r][0]=1; g[r][COLS-1]=1; }
+  for (let c=0;c<COLS;c++) { g[0][c]=1; g[ROWS-1][c]=1; }
+  // Forest walls — strategic clusters to create chokepoints
+  for (let r=2;r<ROWS-2;r++) for (let c=2;c<COLS-2;c++) {
+    if (Math.random()<0.2) g[r][c]=1;
+  }
+  // Clear spawn zones
+  for (let r=1;r<=3;r++) for (let c=1;c<=3;c++) g[r][c]=0;
+  for (let r=ROWS-4;r<ROWS-1;r++) for (let c=COLS-4;c<COLS-1;c++) g[r][c]=0;
+  return g;
+}
+
+function placeRabbits(g) {
+  const list=[];
+  let tries=0;
+  while (list.length<5 && tries<500) {
+    tries++;
+    const r=2+Math.floor(Math.random()*(ROWS-4));
+    const c=3+Math.floor(Math.random()*(COLS-6));
+    if (g[r][c]===0 && !list.find(([x,y])=>x===r&&y===c)) list.push([r,c]);
+  }
+  return list;
+}
+
+function initGame() {
+  grid=genGrid(); rabbits=placeRabbits(grid);
+  player={r:1,c:1}; fox={r:ROWS-2,c:COLS-2};
+  foxPath=[]; frameCount=0; gameActive=true; collected=0;
+  foxFrameInterval=18;
+  updateGreedy(); updateHUD();
+}
+
+function updateGreedy() {
+  if (!gameActive) return;
+  foxPath = greedyBFS(grid, fox.r, fox.c, player.r, player.c);
+}
+
+function updateHUD() {
+  document.getElementById('hud-rabbits').textContent = `${collected}/5`;
+  const d = Math.abs(player.r-fox.r) + Math.abs(player.c-fox.c);
+  const el=document.getElementById('hud-dist');
+  el.textContent=d; el.style.color=d<=3?'#ef4444':d<=6?'#fbbf24':'#22d3ee';
+  // Speed pips
+  const speed = Math.max(1, Math.round((18-foxFrameInterval)/1.2));
+  const pipsEl=document.getElementById('speed-pips');
+  pipsEl.innerHTML='';
+  for (let i=0;i<5;i++) {
+    const pip=document.createElement('div');
+    pip.className='pip'+(i<speed?' lit':'');
+    pipsEl.appendChild(pip);
+  }
+}
+
+function movePlayer(dr,dc) {
+  if (!gameActive) return;
+  const nr=player.r+dr, nc=player.c+dc;
+  if (nr<0||nr>=ROWS||nc<0||nc>=COLS||grid[nr][nc]===1) return;
+  player.r=nr; player.c=nc;
+  const ci=rabbits.findIndex(([r,c])=>r===nr&&c===nc);
+  if (ci>=0) {
+    rabbits.splice(ci,1); collected++;
+    foxFrameInterval = Math.max(12, foxFrameInterval-1); // fox gets faster!
+    if (rabbits.length===0) { endGame(true); return; }
+  }
+  checkCatch(); updateHUD();
+}
+
+function moveFox() {
+  if (!gameActive || !foxPath.length) return;
+  const [nr,nc]=foxPath.shift();
+  if (grid[nr][nc]!==1) { fox.r=nr; fox.c=nc; }
+  checkCatch();
+}
+
+function checkCatch() { if(fox.r===player.r&&fox.c===player.c) endGame(false); }
+
+function draw() {
+  ctx.fillStyle='#060e04'; ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // Forest ground
+  for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) {
+    const x=c*CS, y=r*CS;
+    if (grid[r][c]===1) {
+      ctx.fillStyle='#1c0a00'; ctx.fillRect(x,y,CS,CS);
+      ctx.strokeStyle='rgba(60,20,0,0.4)'; ctx.lineWidth=.5;
+      ctx.strokeRect(x+.5,y+.5,CS-1,CS-1);
+    } else {
+      ctx.fillStyle='#0d1a08'; ctx.fillRect(x,y,CS,CS);
+      ctx.strokeStyle='rgba(34,197,94,0.04)'; ctx.lineWidth=.4;
+      ctx.strokeRect(x,y,CS,CS);
+    }
+  }
+
+  // Greedy path (orange trail — notice it's NOT always the shortest!)
+  foxPath.forEach(([r,c],i) => {
+    ctx.fillStyle=`rgba(249,115,22,${0.07+i/Math.max(foxPath.length,1)*0.18})`;
+    ctx.fillRect(c*CS+2, r*CS+2, CS-4, CS-4);
+  });
+
+  // Rabbits — white pulsing dots
+  const t=Date.now()/800;
+  rabbits.forEach(([r,c]) => {
+    const p=0.8+Math.sin(t+r*1.3+c)*0.2;
+    const x=c*CS+CS/2, y=r*CS+CS/2, s=CS*0.28*p;
+    ctx.shadowColor='rgba(255,255,255,.6)'; ctx.shadowBlur=10*p;
+    ctx.fillStyle='#ffffff'; ctx.fillRect(x-s/2,y-s/2,s,s);
+    ctx.shadowBlur=0;
+    // Bunny ears (tiny)
+    if (CS>=14) {
+      ctx.fillStyle='rgba(255,200,200,.7)';
+      const es=Math.max(2,CS*.1);
+      ctx.fillRect(x-es*1.5,y-s/2-es,es,es);
+      ctx.fillRect(x+es*.5, y-s/2-es,es,es);
+    }
+  });
+
+  // Fox — orange with tail flick
+  const fx=fox.c*CS, fy=fox.r*CS;
+  ctx.shadowColor='rgba(249,115,22,.9)'; ctx.shadowBlur=18;
+  ctx.fillStyle='#f97316'; ctx.fillRect(fx+2,fy+2,CS-4,CS-4);
+  ctx.shadowBlur=0;
+  ctx.fillStyle='rgba(255,255,255,.5)';
+  const ew=Math.max(2,CS*.15);
+  ctx.fillRect(fx+CS*.22,fy+CS*.28,ew,ew);
+  ctx.fillRect(fx+CS*.62,fy+CS*.28,ew,ew);
+
+  // Player — blue
+  const px=player.c*CS, py=player.r*CS;
+  ctx.shadowColor='rgba(96,165,250,.85)'; ctx.shadowBlur=16;
+  ctx.fillStyle='#60a5fa'; ctx.fillRect(px+2,py+2,CS-4,CS-4);
+  ctx.shadowBlur=0;
+  ctx.fillStyle='rgba(255,255,255,.45)'; const dot=Math.max(2,CS*.22);
+  ctx.fillRect(px+(CS-dot)/2,py+(CS-dot)/2,dot,dot);
+
+  // Danger
+  const dist=Math.abs(player.r-fox.r)+Math.abs(player.c-fox.c);
+  if (dist<=3) { ctx.fillStyle=`rgba(249,115,22,${(4-dist)*.045})`; ctx.fillRect(0,0,canvas.width,canvas.height); }
+}
+
+let rafId;
+function loop() {
+  if (!gameActive) return;
+  frameCount++;
+  if (frameCount%foxFrameInterval===0) moveFox();
+  draw();
+  rafId=requestAnimationFrame(loop);
+}
+
+function endGame(won) {
+  gameActive=false; clearInterval(greedyInterval); cancelAnimationFrame(rafId);
+  setTimeout(()=>document.getElementById(won?'win-overlay':'dead-overlay').classList.remove('hidden'),300);
+}
+
+document.addEventListener('keydown', e => {
+  const m={w:[-1,0],W:[-1,0],ArrowUp:[-1,0],s:[1,0],S:[1,0],ArrowDown:[1,0],
+           a:[0,-1],A:[0,-1],ArrowLeft:[0,-1],d:[0,1],D:[0,1],ArrowRight:[0,1]};
+  if(m[e.key]){const[dr,dc]=m[e.key];movePlayer(dr,dc);e.preventDefault();}
+});
+
+function startGame() {
+  ['start-overlay','win-overlay','dead-overlay'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  clearInterval(greedyInterval); cancelAnimationFrame(rafId);
+  initGame();
+  greedyInterval = setInterval(()=>{ if(gameActive) updateGreedy(); }, 850);
+  loop();
+}
+
+document.getElementById('start-btn').addEventListener('click',startGame);
+document.getElementById('win-btn').addEventListener('click', startGame);
+document.getElementById('dead-btn').addEventListener('click',startGame);
+initGame(); draw();
+</script>
+</body>
+</html>
