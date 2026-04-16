@@ -453,8 +453,8 @@ function loop(){
   tick++;
   ctx.clearRect(0,0,canvas.width,canvas.height);
   if(frightTimer>0) frightTimer--;
-  if(tick%4===0) movePac();
-  if(tick%6===0){ moveGhosts(); }
+  if(tick%5===0) movePac();
+  if(tick%16===0){ moveGhosts(); }
   checkCollision();
   drawMaze(); drawGhosts(); drawPac();
 }

@@ -9,74 +9,76 @@
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-    /* ── Dark (Cyberpunk Cyan) ─────────────────────────────────────────── */
+    /* ─── DARK: Pure Black + Burning Orange ─────────────────────────── */
     :root,[data-theme="dark"]{
-      --bg:        #05080f;
-      --surface:   #0b1120;
-      --surface2:  #101a2e;
-      --glass:     rgba(5,8,15,0.85);
-      --border:    rgba(34,211,238,0.16);
-      --border-hi: rgba(34,211,238,0.45);
-      --accent:    #22d3ee;   /* cyan */
-      --accent2:   #a855f7;   /* purple */
-      --accent3:   #4ade80;   /* lime */
+      --bg:        #060400;
+      --surface:   #0c0800;
+      --surface2:  #130e00;
+      --glass:     rgba(6,4,0,0.92);
+      --border:    rgba(249,115,22,0.22);
+      --border-hi: rgba(249,115,22,0.55);
+      --accent:    #f97316;
+      --accent2:   #fbbf24;
+      --accent3:   #34d399;
       --danger:    #f87171;
-      --warn:      #fbbf24;
-      --text:      #e2e8f0;
-      --text-muted:#475569;
-      --text-dim:  #94a3b8;
-      --shadow:    0 0 40px rgba(0,0,0,0.8);
+      --warn:      #fde68a;
+      --text:      #fef3c7;
+      --text-muted:#7c5a2e;
+      --text-dim:  #b8936a;
+      --shadow:    0 0 60px rgba(0,0,0,0.95);
     }
 
-    /* ── Light ─────────────────────────────────────────────────────────── */
+    /* ─── LIGHT: Clean White + Lime ────────────────────────────────── */
     [data-theme="light"]{
-      --bg:        #f0f9ff;
+      --bg:        #fafaf9;
       --surface:   #ffffff;
-      --surface2:  #f8fbff;
-      --glass:     rgba(255,255,255,0.9);
-      --border:    rgba(14,165,233,0.2);
-      --border-hi: rgba(14,165,233,0.5);
-      --accent:    #0ea5e9;
-      --accent2:   #7c3aed;
-      --accent3:   #16a34a;
+      --surface2:  #f5f5f4;
+      --glass:     rgba(255,255,255,0.92);
+      --border:    rgba(101,163,13,0.22);
+      --border-hi: rgba(101,163,13,0.5);
+      --accent:    #65a30d;
+      --accent2:   #d97706;
+      --accent3:   #0891b2;
       --danger:    #dc2626;
-      --warn:      #d97706;
-      --text:      #0c1a2e;
-      --text-muted:#64748b;
-      --text-dim:  #475569;
-      --shadow:    0 4px 24px rgba(14,165,233,0.12);
+      --warn:      #ca8a04;
+      --text:      #1c1917;
+      --text-muted:#78716c;
+      --text-dim:  #57534e;
+      --shadow:    0 4px 24px rgba(0,0,0,0.08);
     }
 
     html,body{height:100%}
     body{
       font-family:'Inter',sans-serif;
-      background:var(--bg); color:var(--text);
-      min-height:100vh; overflow-x:hidden;
-      transition:background .3s,color .3s;
+      background:var(--bg);color:var(--text);
+      min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s;
     }
     body::before{
       content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       background:
-        radial-gradient(ellipse 70% 45% at 10% 5%,  rgba(34,211,238,.06) 0%,transparent 60%),
-        radial-gradient(ellipse 55% 40% at 90% 90%, rgba(168,85,247,.05) 0%,transparent 60%);
+        radial-gradient(ellipse 60% 40% at 10% 5%,  rgba(249,115,22,.08) 0%,transparent 60%),
+        radial-gradient(ellipse 45% 35% at 90% 90%, rgba(251,191,36,.05) 0%,transparent 55%);
+      transition:opacity .3s;
     }
     [data-theme="light"] body::before{
       background:
-        radial-gradient(ellipse 70% 45% at 10% 5%,  rgba(14,165,233,.07) 0%,transparent 60%),
-        radial-gradient(ellipse 55% 40% at 90% 90%, rgba(124,58,237,.05) 0%,transparent 60%);
+        radial-gradient(ellipse 60% 40% at 10% 5%,  rgba(101,163,13,.07) 0%,transparent 60%),
+        radial-gradient(ellipse 45% 35% at 90% 90%, rgba(217,119,6,.05)  0%,transparent 55%);
     }
 
     #app{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh}
 
-    /* ── Header ──────────────────────────────────────────────────────────── */
+    /* ── Header ──────────────────────────────────────────────────────── */
     header{
       padding:0 20px;height:54px;
       display:flex;align-items:center;justify-content:space-between;
       background:var(--surface);border-bottom:1px solid var(--border);
       backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;
     }
-    .logo{display:flex;align-items:center;gap:9px;font-family:'Orbitron',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.5px}
-    .logo-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px}
+    .logo{display:flex;align-items:center;gap:9px;
+          font-family:'Orbitron',sans-serif;font-weight:700;font-size:.92rem;letter-spacing:.5px}
+    .logo-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+               border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px}
     .logo em{color:var(--accent);font-style:normal}
     .header-right{display:flex;align-items:center;gap:8px}
 
@@ -84,43 +86,46 @@
     .grid-size-wrap label{font-size:.7rem;color:var(--text-muted)}
     .grid-size-wrap select{
       padding:4px 8px;border-radius:7px;border:1px solid var(--border);
-      background:var(--surface2);color:var(--text);font-size:.76rem;cursor:pointer;
+      background:var(--surface2);color:var(--text);font-size:.75rem;cursor:pointer;
     }
     .grid-size-wrap select:focus{outline:none;border-color:var(--accent)}
 
     #theme-toggle{
       width:34px;height:34px;border-radius:8px;border:1px solid var(--border);
       background:var(--surface2);color:var(--text);font-size:15px;
-      cursor:pointer;display:flex;align-items:center;justify-content:center;
-      transition:all .2s;
+      cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;
     }
     #theme-toggle:hover{border-color:var(--accent);transform:scale(1.08)}
 
-    /* ── Algo Bar ──────────────────────────────────────────────────────── */
+    /* ── Algo Bar ─────────────────────────────────────────────────────── */
     .algo-bar{
       padding:8px 20px;background:var(--surface);
       border-bottom:1px solid var(--border);
       display:flex;align-items:center;gap:8px;flex-wrap:wrap;
     }
-    .algo-label{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);white-space:nowrap}
+    .algo-label{font-size:.64rem;font-weight:700;text-transform:uppercase;
+                letter-spacing:1.1px;color:var(--text-muted);white-space:nowrap}
     .algo-tabs{display:flex;gap:4px;flex-wrap:wrap;flex:1}
     .algo-tab{
-      padding:5px 12px;border-radius:18px;font-size:.75rem;font-weight:500;
+      padding:5px 12px;border-radius:18px;font-size:.74rem;font-weight:500;
       cursor:pointer;border:1px solid var(--border);
       background:transparent;color:var(--text-dim);transition:all .2s;white-space:nowrap;
     }
-    .algo-tab:hover{border-color:var(--accent);color:var(--accent);background:rgba(34,211,238,.07)}
-    [data-theme="light"] .algo-tab:hover{background:rgba(14,165,233,.07)}
+    .algo-tab:hover{border-color:var(--accent);color:var(--accent);background:rgba(249,115,22,.09)}
+    [data-theme="light"] .algo-tab:hover{background:rgba(101,163,13,.08)}
     .algo-tab.active{
-      background:linear-gradient(135deg,rgba(34,211,238,.18),rgba(168,85,247,.12));
+      background:linear-gradient(135deg,rgba(249,115,22,.22),rgba(251,191,36,.14));
       border-color:var(--accent);color:var(--text);
+    }
+    [data-theme="light"] .algo-tab.active{
+      background:linear-gradient(135deg,rgba(101,163,13,.15),rgba(217,119,6,.1));
     }
     .badge{
       display:inline-block;font-size:.56rem;padding:1px 5px;border-radius:4px;
-      margin-left:3px;background:rgba(34,211,238,.18);color:var(--accent);
-      font-weight:600;vertical-align:middle;
+      margin-left:3px;background:rgba(249,115,22,.2);color:var(--accent);
+      font-weight:700;vertical-align:middle;
     }
-    [data-theme="light"] .badge{background:rgba(14,165,233,.14)}
+    [data-theme="light"] .badge{background:rgba(101,163,13,.15);color:var(--accent)}
     .dls-input-wrap{display:none;align-items:center;gap:6px}
     .dls-input-wrap.visible{display:flex}
     .dls-input-wrap label{font-size:.72rem;color:var(--text-dim)}
@@ -131,80 +136,76 @@
     }
     .dls-input-wrap input:focus{outline:none;border-color:var(--accent)}
 
-    /* ── Main Layout ───────────────────────────────────────────────────── */
+    /* ── Layout ─────────────────────────────────────────────────────── */
     .main{display:flex;flex:1;overflow:hidden}
 
-    /* ── Left Game Sidebar ─────────────────────────────────────────────── */
+    /* ── Left Game Sidebar ──────────────────────────────────────────── */
     .game-sidebar{
       width:148px;min-width:148px;
       background:var(--surface);border-right:1px solid var(--border);
       display:flex;flex-direction:column;align-items:center;
-      padding:20px 10px;gap:8px;
+      padding:18px 10px;gap:8px;
     }
     .game-sidebar-title{
-      font-size:.6rem;font-weight:600;text-transform:uppercase;
+      font-size:.6rem;font-weight:700;text-transform:uppercase;
       letter-spacing:1.2px;color:var(--text-muted);margin-bottom:4px;text-align:center;
     }
-
     .game-card{
       display:none;flex-direction:column;align-items:center;
       background:var(--surface2);border:1px solid var(--border-hi);
-      border-radius:12px;padding:16px 10px;width:100%;text-align:center;
-      gap:6px;animation:fadeIn .3s ease;
+      border-radius:12px;padding:14px 10px;width:100%;text-align:center;
+      gap:5px;animation:fadeInUp .35s ease;
     }
     .game-card.visible{display:flex}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
     .game-card-icon{font-size:2rem;line-height:1}
     .game-card-algo{
       font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;
-      color:var(--accent);background:rgba(34,211,238,.12);
-      padding:2px 8px;border-radius:12px;border:1px solid rgba(34,211,238,.25);
+      color:var(--accent);background:rgba(249,115,22,.14);
+      padding:2px 7px;border-radius:10px;border:1px solid rgba(249,115,22,.3);
     }
-    [data-theme="light"] .game-card-algo{background:rgba(14,165,233,.1);border-color:rgba(14,165,233,.2)}
-    .game-card-name{font-family:'Orbitron',sans-serif;font-size:.78rem;font-weight:600;color:var(--text)}
-    .game-card-desc{font-size:.67rem;color:var(--text-muted);line-height:1.45;text-align:center}
-
+    [data-theme="light"] .game-card-algo{background:rgba(101,163,13,.1);border-color:rgba(101,163,13,.25);color:var(--accent)}
+    .game-card-name{font-family:'Orbitron',sans-serif;font-size:.76rem;font-weight:700;color:var(--text)}
+    .game-card-desc{font-size:.65rem;color:var(--text-muted);line-height:1.4;text-align:center}
     .play-btn{
-      display:inline-flex;align-items:center;justify-content:center;gap:5px;
-      margin-top:6px;padding:8px 14px;border-radius:9px;
-      font-family:'Orbitron',sans-serif;font-size:.72rem;font-weight:700;
-      letter-spacing:.5px;text-decoration:none;
+      display:flex;align-items:center;justify-content:center;gap:4px;
+      margin-top:5px;padding:8px 12px;border-radius:9px;
+      font-family:'Orbitron',sans-serif;font-size:.68rem;font-weight:700;
+      letter-spacing:.4px;text-decoration:none;
       background:linear-gradient(135deg,var(--accent),var(--accent2));
-      color:#000;width:100%;
-      transition:all .2s;
-      box-shadow:0 0 16px rgba(34,211,238,.3);
+      color:#000;width:100%;transition:all .2s;
+      box-shadow:0 0 14px rgba(249,115,22,.35);
     }
-    [data-theme="light"] .play-btn{color:#fff;box-shadow:0 0 16px rgba(14,165,233,.3)}
-    .play-btn:hover{transform:translateY(-2px);box-shadow:0 0 28px rgba(34,211,238,.55)}
-
+    .play-btn:hover{transform:translateY(-2px);box-shadow:0 0 28px rgba(249,115,22,.65)}
     .game-hint{
       display:flex;flex-direction:column;align-items:center;gap:8px;
-      padding:16px 8px;text-align:center;
+      padding:14px 8px;text-align:center;
     }
-    .game-hint-icon{font-size:1.8rem}
-    .game-hint-text{font-size:.66rem;color:var(--text-muted);line-height:1.5}
+    .game-hint-icon{font-size:1.7rem}
+    .game-hint-text{font-size:.65rem;color:var(--text-muted);line-height:1.5}
 
-    /* ── Grid Area ─────────────────────────────────────────────────────── */
+    /* ── Grid Area ──────────────────────────────────────────────────── */
     .grid-area{
       flex:1;display:flex;flex-direction:column;
       align-items:center;padding:14px;gap:10px;min-width:0;
     }
 
-    /* ── Toolbar ───────────────────────────────────────────────────────── */
+    /* ── Toolbar ────────────────────────────────────────────────────── */
     .toolbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;width:100%;max-width:860px}
     .tool-group{
       display:flex;gap:2px;background:var(--surface);
       border:1px solid var(--border);border-radius:9px;padding:3px;
     }
     .tool-btn{
-      padding:5px 10px;font-size:.73rem;font-weight:500;
+      padding:5px 10px;font-size:.72rem;font-weight:500;
       border:none;border-radius:6px;cursor:pointer;
       background:transparent;color:var(--text-dim);
       transition:all .2s;display:flex;align-items:center;gap:3px;white-space:nowrap;
     }
-    .tool-btn:hover{background:rgba(34,211,238,.1);color:var(--text)}
-    .tool-btn.active{background:rgba(34,211,238,.18);color:var(--accent)}
+    .tool-btn:hover{background:rgba(249,115,22,.1);color:var(--text)}
+    [data-theme="light"] .tool-btn:hover{background:rgba(101,163,13,.1)}
+    .tool-btn.active{background:rgba(249,115,22,.2);color:var(--accent)}
+    [data-theme="light"] .tool-btn.active{background:rgba(101,163,13,.15)}
     .spacer{flex:1}
     .action-btn{
       padding:6px 13px;font-size:.76rem;font-weight:600;
@@ -213,76 +214,100 @@
     }
     .btn-run{
       background:linear-gradient(135deg,var(--accent),var(--accent2));
-      color:#000;box-shadow:0 0 14px rgba(34,211,238,.35);
+      color:#000;box-shadow:0 0 16px rgba(249,115,22,.4);
     }
-    [data-theme="light"] .btn-run{color:#fff}
-    .btn-run:hover{transform:translateY(-1px);box-shadow:0 0 24px rgba(34,211,238,.55)}
+    .btn-run:hover{transform:translateY(-1px);box-shadow:0 0 28px rgba(249,115,22,.7)}
     .btn-run:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
-    .btn-maze{background:var(--surface);border:1px solid var(--border);color:var(--text-dim)}
-    .btn-maze:hover{border-color:var(--accent2);color:var(--accent2)}
+    .btn-maze  {background:var(--surface);border:1px solid var(--border);color:var(--text-dim)}
+    .btn-maze:hover{border-color:var(--accent);color:var(--accent)}
     .btn-random{background:var(--surface);border:1px solid var(--border);color:var(--text-dim)}
-    .btn-random:hover{border-color:var(--warn);color:var(--warn)}
-    .btn-clear{background:var(--surface);border:1px solid var(--border);color:var(--text-dim)}
+    .btn-random:hover{border-color:var(--accent2);color:var(--accent2)}
+    .btn-clear {background:var(--surface);border:1px solid var(--border);color:var(--text-dim)}
     .btn-clear:hover{border-color:var(--danger);color:var(--danger)}
 
-    /* ── Legend ────────────────────────────────────────────────────────── */
+    /* ── Legend ─────────────────────────────────────────────────────── */
     .legend{display:flex;gap:12px;flex-wrap:wrap;align-items:center;width:100%;max-width:860px}
     .legend-item{display:flex;align-items:center;gap:4px;font-size:.68rem;color:var(--text-muted)}
     .legend-dot{width:10px;height:10px;border-radius:2px}
 
-    /* ── Grid Canvas ───────────────────────────────────────────────────── */
+    /* ── Canvas ─────────────────────────────────────────────────────── */
     .grid-wrap{
       border-radius:10px;overflow:hidden;
-      border:1px solid var(--border);
-      box-shadow:var(--shadow);
+      border:1px solid var(--border);box-shadow:var(--shadow);
       cursor:crosshair;user-select:none;
     }
     #grid-canvas{display:block}
 
-    /* ── Stats Panel ───────────────────────────────────────────────────── */
+    /* ── Stats Panel ─────────────────────────────────────────────────── */
     .stats-panel{
-      width:258px;min-width:258px;
+      width:262px;min-width:262px;
       background:var(--surface);border-left:1px solid var(--border);
       display:flex;flex-direction:column;overflow-y:auto;
     }
-    .panel-section{padding:16px;border-bottom:1px solid var(--border)}
-    .panel-title{font-size:.64rem;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-muted);margin-bottom:10px}
+    .panel-section{padding:15px;border-bottom:1px solid var(--border)}
+    .panel-title{font-size:.63rem;font-weight:700;text-transform:uppercase;
+                 letter-spacing:1.2px;color:var(--text-muted);margin-bottom:10px}
 
-    .stat-cards{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+    .stat-cards{display:grid;grid-template-columns:1fr 1fr;gap:6px}
     .stat-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px}
     .stat-card.full{grid-column:1/-1}
     .stat-label{font-size:.6rem;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:2px}
-    .stat-value{font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:600;color:var(--text);line-height:1}
+    .stat-value{font-family:'JetBrains Mono',monospace;font-size:1.12rem;font-weight:700;color:var(--text);line-height:1}
     .stat-value.good{color:var(--accent3)}
-    .stat-value.bad{color:var(--danger)}
+    .stat-value.bad {color:var(--danger)}
 
     .status-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:18px;font-size:.7rem;font-weight:600}
     .status-badge.idle    {background:rgba(107,114,128,.12);color:var(--text-muted);border:1px solid rgba(107,114,128,.2)}
-    .status-badge.running {background:rgba(34,211,238,.12); color:var(--accent);    border:1px solid rgba(34,211,238,.3)}
-    .status-badge.found   {background:rgba(74,222,128,.12); color:var(--accent3);   border:1px solid rgba(74,222,128,.3)}
+    .status-badge.running {background:rgba(249,115,22,.14); color:var(--accent);    border:1px solid rgba(249,115,22,.38)}
+    .status-badge.found   {background:rgba(52,211,153,.12); color:var(--accent3);   border:1px solid rgba(52,211,153,.3)}
     .status-badge.notfound{background:rgba(248,113,113,.12);color:var(--danger);    border:1px solid rgba(248,113,113,.3)}
 
     .pulse{animation:pulse 1.4s ease infinite}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
     .progress-wrap{margin-top:9px}
-    .progress-label{display:flex;justify-content:space-between;font-size:.64rem;color:var(--text-muted);margin-bottom:3px}
+    .progress-label{display:flex;justify-content:space-between;font-size:.63rem;color:var(--text-muted);margin-bottom:3px}
     .progress-bar{height:3px;border-radius:2px;background:var(--border);overflow:hidden}
-    .progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--accent3));width:0%;transition:width .1s}
+    .progress-fill{
+      height:100%;border-radius:2px;
+      background:linear-gradient(90deg,var(--accent),var(--accent2));
+      width:0%;transition:width .1s;
+    }
+
+    /* ── Live Explanation ──────────────────────────────────────────── */
+    .explain-card{
+      background:var(--surface2);border:1px solid var(--border);
+      border-radius:8px;padding:11px;
+    }
+    .explain-phase{
+      display:inline-block;font-size:.58rem;font-weight:700;text-transform:uppercase;
+      letter-spacing:.8px;color:var(--accent);
+      background:rgba(249,115,22,.14);border:1px solid rgba(249,115,22,.3);
+      padding:2px 7px;border-radius:8px;margin-bottom:7px;
+    }
+    [data-theme="light"] .explain-phase{background:rgba(101,163,13,.1);border-color:rgba(101,163,13,.25);color:var(--accent)}
+    .explain-text{font-size:.72rem;color:var(--text-dim);line-height:1.55}
+    .explain-insight{
+      margin-top:8px;padding:6px 9px;
+      background:rgba(249,115,22,.07);border-left:2px solid var(--accent);
+      font-size:.68rem;color:var(--text-dim);font-style:italic;line-height:1.4;
+      border-radius:0 6px 6px 0;
+    }
+    [data-theme="light"] .explain-insight{background:rgba(101,163,13,.06);border-color:var(--accent)}
 
     .algo-info-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px}
     .algo-info-name{font-size:.84rem;font-weight:600;color:var(--text);margin-bottom:4px}
     .algo-info-desc{font-size:.7rem;color:var(--text-dim);line-height:1.5}
     .algo-info-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:8px}
     .tag{font-size:.59rem;padding:2px 7px;border-radius:5px;font-weight:600}
-    .tag.optimal   {background:rgba(74,222,128,.14);  color:var(--accent3)}
-    .tag.complete  {background:rgba(34,211,238,.14);  color:var(--accent)}
-    .tag.heuristic {background:rgba(251,191,36,.14);  color:var(--warn)}
-    .tag.uninformed{background:rgba(148,163,184,.14); color:var(--text-dim)}
+    .tag.optimal   {background:rgba(52,211,153,.14); color:var(--accent3)}
+    .tag.complete  {background:rgba(249,115,22,.14); color:var(--accent)}
+    .tag.heuristic {background:rgba(251,191,36,.14); color:var(--accent2)}
+    .tag.uninformed{background:rgba(148,163,184,.12);color:var(--text-dim)}
 
     .log-area{
       font-family:'JetBrains Mono',monospace;font-size:.65rem;
-      color:var(--text-dim);line-height:1.6;max-height:130px;overflow-y:auto;padding-right:4px;
+      color:var(--text-dim);line-height:1.6;max-height:120px;overflow-y:auto;padding-right:4px;
     }
     .log-area::-webkit-scrollbar{width:3px}
     .log-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
@@ -290,7 +315,6 @@
     .log-entry.success{color:var(--accent3)}
     .log-entry.error  {color:var(--danger)}
 
-    /* ── Toast ──────────────────────────────────────────────────────────── */
     #toast{
       position:fixed;bottom:20px;right:20px;
       min-width:200px;max-width:300px;padding:10px 14px;
@@ -301,13 +325,12 @@
       transition:transform .3s ease,opacity .3s ease;pointer-events:none;
     }
     #toast.visible {transform:translateY(0);opacity:1}
-    #toast.success {border-color:rgba(74,222,128,.5);color:var(--accent3)}
+    #toast.success {border-color:rgba(52,211,153,.5); color:var(--accent3)}
     #toast.error   {border-color:rgba(248,113,113,.5);color:var(--danger)}
-    #toast.info    {border-color:rgba(34,211,238,.4); color:var(--accent)}
+    #toast.info    {border-color:rgba(249,115,22,.45);color:var(--accent)}
 
     ::-webkit-scrollbar{width:5px}
     ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-
     @media(max-width:768px){.stats-panel,.game-sidebar{display:none}.grid-area{padding:8px}}
   </style>
 </head>
@@ -351,17 +374,13 @@
     <!-- Left Game Sidebar -->
     <div class="game-sidebar">
       <div class="game-sidebar-title">🎮 Games</div>
-
-      <!-- BFS → Pac-Man -->
       <div class="game-card" id="game-card-bfs">
         <div class="game-card-icon">👾</div>
         <div class="game-card-algo">BFS</div>
         <div class="game-card-name">PAC-MAN</div>
-        <div class="game-card-desc">Ghosts chase you using Breadth-First Search</div>
+        <div class="game-card-desc">Ghosts chase you using BFS shortest-path AI</div>
         <a href="/pacman" class="play-btn">▶ Play Game</a>
       </div>
-
-      <!-- A* → Zombie Escape -->
       <div class="game-card" id="game-card-astar">
         <div class="game-card-icon">🧟</div>
         <div class="game-card-algo">A*</div>
@@ -369,8 +388,6 @@
         <div class="game-card-desc">Zombie hunts you with A* intelligence. Survive 60s!</div>
         <a href="/zombie" class="play-btn">▶ Play Game</a>
       </div>
-
-      <!-- Default hint -->
       <div class="game-hint" id="game-hint">
         <div class="game-hint-icon">🎮</div>
         <div class="game-hint-text">Select <strong>BFS</strong> or <strong>A*</strong> to unlock a fun game!</div>
@@ -389,7 +406,7 @@
         <button class="action-btn btn-maze"   id="btn-maze">🧩 Maze</button>
         <button class="action-btn btn-random" id="btn-random">🎲 Random</button>
         <button class="action-btn btn-clear"  id="btn-clear">🗑 Clear</button>
-        <button class="action-btn btn-clear"  id="btn-reset-path">↺ Reset Path</button>
+        <button class="action-btn btn-clear"  id="btn-reset-path">↺ Reset</button>
         <div class="spacer"></div>
         <button class="action-btn btn-run" id="btn-run">▶ Run</button>
       </div>
@@ -399,10 +416,10 @@
         <div class="legend-item"><div class="legend-dot" id="ld-end"></div> End</div>
         <div class="legend-item"><div class="legend-dot" id="ld-wall"></div> Wall</div>
         <div class="legend-item"><div class="legend-dot" id="ld-visited"></div> Visited</div>
-        <div class="legend-item"><div class="legend-dot" id="ld-path-a"></div>→<div class="legend-dot" id="ld-path-b" style="margin-left:4px"></div> Path</div>
+        <div class="legend-item"><div class="legend-dot" id="ld-path-a"></div> → <div class="legend-dot" id="ld-path-b" style="margin-left:2px"></div> Path</div>
       </div>
 
-      <div class="grid-wrap" id="grid-wrap">
+      <div class="grid-wrap">
         <canvas id="grid-canvas"></canvas>
       </div>
     </div>
@@ -416,8 +433,17 @@
           <span id="status-text">Idle</span>
         </div>
         <div class="progress-wrap" id="progress-wrap" style="display:none">
-          <div class="progress-label"><span>Exploring…</span><span id="progress-pct">0%</span></div>
+          <div class="progress-label"><span>Progress</span><span id="progress-pct">0%</span></div>
           <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        </div>
+      </div>
+
+      <div class="panel-section" id="explain-section" style="display:none">
+        <div class="panel-title">🧠 Live Explanation</div>
+        <div class="explain-card">
+          <div class="explain-phase"  id="explain-phase">Initializing</div>
+          <div class="explain-text"   id="explain-text">Starting…</div>
+          <div class="explain-insight" id="explain-insight"></div>
         </div>
       </div>
 
@@ -436,7 +462,7 @@
         <div class="panel-title">Algorithm Info</div>
         <div class="algo-info-card">
           <div class="algo-info-name" id="ai-name">A* Search</div>
-          <div class="algo-info-desc" id="ai-desc">Uses f(n)=g(n)+h(n) with Manhattan heuristic. Most efficient optimal algorithm on grids.</div>
+          <div class="algo-info-desc" id="ai-desc">Combines path cost g(n) with Manhattan heuristic h(n). Most efficient optimal algorithm on grids.</div>
           <div class="algo-info-tags" id="ai-tags">
             <span class="tag optimal">Optimal</span><span class="tag complete">Complete</span><span class="tag heuristic">Heuristic</span>
           </div>
@@ -453,32 +479,53 @@
 <div id="toast"></div>
 
 <script>
-// ── Theme Palettes ────────────────────────────────────────────────────────────
+// ── Color Palettes ────────────────────────────────────────────────────────────
 let isDark = true;
 
+/*
+ * DARK — Pure black canvas, orange/amber visualization
+ *   • Empty cells  : near-black charcoal (cells clearly separated by grid lines)
+ *   • Visited       : BRIGHT amber-orange (#f59e0b) — looks like spreading fire on black
+ *   • Visited flash : warm gold/cream burst (#fde68a)
+ *   • Path FROM     : bright amber-gold   (#fde047)
+ *   • Path TO       : deep coral-orange   (#ea580c)
+ *   → Path looks like a glowing fire trail from start to end
+ */
 const DARK = {
-  bg:'#05080f', empty:'#0d1929',
-  gridLine:'rgba(34,211,238,0.11)',
-  wall:'#1e3a5f',   wallPop:'#38bdf8',
-  start:'#4ade80',  end:'#fb923c',
-  visited:'#0284c7',visitedPop:'#7dd3fc',
-  pathFrom:[6,182,212],  // cyan
-  pathTo:  [163,230,53], // lime
+  bg:       '#060400',
+  empty:    '#0e0b02',       // near-black, slight warm tint — cells are visible but dark
+  gridLine: 'rgba(249,115,22,0.07)', // very faint orange grid lines — subtle, elegant
+  wall:     '#2a1600',       // dark charcoal-brown, clearly darker than empty
+  wallPop:  '#fb923c',       // orange-300 pop flash
+  start:    '#34d399',       // emerald — contrasts beautifully against the orange theme
+  end:      '#f43f5e',       // rose-500 — clear target marker
+  visited:  '#f59e0b',       // amber-500 — VERY vibrant gold against black 🔥
+  visitedPop:'#fef9c3',      // yellow-100 — bright burst flash before settling
+  pathFrom: [253, 224, 71],  // #fde047  yellow-300 — bright start of path
+  pathTo:   [234,  88, 12],  // #ea580c  orange-600 — deep orange/ember end
 };
+
+/*
+ * LIGHT — clean white, lime green explored, dark path
+ */
 const LIGHT = {
-  bg:'#f0f9ff', empty:'#ffffff',
-  gridLine:'rgba(14,165,233,0.13)',
-  wall:'#334155',   wallPop:'#94a3b8',
-  start:'#16a34a',  end:'#ea580c',
-  visited:'#7dd3fc',visitedPop:'#bae6fd',
-  pathFrom:[14,165,233],
-  pathTo:  [22,163,74],
+  bg:       '#f8fafc',
+  empty:    '#ffffff',
+  gridLine: 'rgba(100,116,139,0.13)',
+  wall:     '#1e293b',
+  wallPop:  '#64748b',
+  start:    '#16a34a',
+  end:      '#dc2626',
+  visited:  '#86efac',       // green-300 — soft pleasant spread
+  visitedPop:'#dcfce7',
+  pathFrom: [234,179,8],     // #eab308 yellow-500
+  pathTo:   [234,88,12],     // #ea580c orange-600
 };
 
 function TH(){ return isDark ? DARK : LIGHT; }
 function lerp(a,b,t){ return Math.round(a+(b-a)*t); }
-function pathGradColor(idx,total){
-  const t = total>1 ? idx/(total-1) : 0, th=TH();
+function pathGradColor(idx, total){
+  const t = total > 1 ? idx/(total-1) : 0, th = TH();
   return `rgb(${lerp(th.pathFrom[0],th.pathTo[0],t)},${lerp(th.pathFrom[1],th.pathTo[1],t)},${lerp(th.pathFrom[2],th.pathTo[2],t)})`;
 }
 
@@ -491,90 +538,198 @@ document.getElementById('theme-toggle').addEventListener('click',()=>{ isDark=!i
 
 function updateLegend(){
   const th=TH();
-  document.getElementById('ld-start').style.background = th.start;
-  document.getElementById('ld-end').style.background   = th.end;
-  document.getElementById('ld-wall').style.background  = th.wall;
+  document.getElementById('ld-start').style.background   = th.start;
+  document.getElementById('ld-end').style.background     = th.end;
+  document.getElementById('ld-wall').style.background    = th.wall;
   document.getElementById('ld-visited').style.background = th.visited;
-  document.getElementById('ld-path-a').style.background = `rgb(${th.pathFrom.join(',')})`;
-  document.getElementById('ld-path-b').style.background = `rgb(${th.pathTo.join(',')})`;
+  document.getElementById('ld-path-a').style.background  = `rgb(${th.pathFrom.join(',')})`;
+  document.getElementById('ld-path-b').style.background  = `rgb(${th.pathTo.join(',')})`;
 }
 
-// ── Constants ─────────────────────────────────────────────────────────────────
-const CELL = {EMPTY:0,WALL:1,START:2,END:3,VISITED:4,PATH:5};
+// ── Algorithm Metadata ─────────────────────────────────────────────────────────
 const ALGO_META = {
-  bfs:   {name:'Breadth-First Search',     desc:'Level-by-level exploration via FIFO queue. Guarantees shortest path on unweighted grids.',             tags:['optimal','complete','uninformed']},
-  dfs:   {name:'Depth-First Search',       desc:'Deep exploration via LIFO stack. Does not guarantee the shortest path.',                               tags:['complete','uninformed']},
-  ucs:   {name:'Uniform Cost Search',      desc:'Expands lowest-cost nodes first. Dijkstra-equivalent, optimal when costs vary.',                       tags:['optimal','complete','uninformed']},
-  astar: {name:'A* Search',               desc:'Combines path cost g(n) with Manhattan heuristic h(n). Most efficient optimal algorithm here.',         tags:['optimal','complete','heuristic']},
-  greedy:{name:'Greedy Best-First Search', desc:'Greedily moves toward goal using only h(n). Fast but not guaranteed optimal.',                          tags:['heuristic']},
-  dls:   {name:'Depth-Limited Search',     desc:'DFS capped at a configurable depth to avoid infinite loops.',                                          tags:['uninformed']},
+  bfs:   {name:'Breadth-First Search',      desc:'Level-by-level FIFO exploration. Guarantees shortest path on any unweighted grid.',              tags:['optimal','complete','uninformed']},
+  dfs:   {name:'Depth-First Search',        desc:'Deep-first LIFO stack exploration. Does not guarantee shortest path.',                           tags:['complete','uninformed']},
+  ucs:   {name:'Uniform Cost Search',       desc:'Expands lowest-cost node first via min-heap. Dijkstra-equivalent — optimal with edge costs.',    tags:['optimal','complete','uninformed']},
+  astar: {name:'A* Search',                desc:'f(n)=g(n)+h(n) with Manhattan heuristic. Most efficient optimal pathfinder on grids.',            tags:['optimal','complete','heuristic']},
+  greedy:{name:'Greedy Best-First Search',  desc:'Uses only h(n) — rushes toward goal. Fast but NOT guaranteed to produce shortest path.',         tags:['heuristic']},
+  dls:   {name:'Depth-Limited Search',      desc:'DFS capped at a depth limit. Prevents infinite loops but may miss paths deeper than limit.',     tags:['uninformed']},
 };
 
-const VIS_DELAY  = 22;
-const PATH_DELAY = 38;
-const MAZE_DELAY = 16;
-const POP_MS     = 110;
+// Live explanation steps per algorithm (shown in right panel as animation runs)
+const ALGO_EXPLAIN = {
+  bfs:[
+    {pct:0,  phase:'Initializing',  text:'Start node added to a FIFO queue. BFS explores all neighbors at distance 1 before moving to distance 2.', insight:'Queue [ start ] → expanding like a ripple outward'},
+    {pct:20, phase:'Wave Expanding',text:'All nodes 1 step away visited. Now expanding distance-2 neighbors. Watch the frontier grow uniformly in all directions.', insight:'Each amber cell = shortest known distance from start'},
+    {pct:45, phase:'Flooding',      text:'BFS marches level-by-level. Every visited cell represents the provably shortest path to reach that node.', insight:'Key: BFS never revisits — first visit = optimal route'},
+    {pct:70, phase:'Near Target',   text:'Frontier is approaching the end node. The moment the end is dequeued, we have the shortest path.', insight:'Nodes explored ≈ the area swept out by BFS waves'},
+    {pct:90, phase:'Tracing Path',  text:'End reached! Following parent pointers back from end → start gives us the optimal route shown in the fire trail.', insight:'BFS guarantees: path length = minimum possible hops ✓'},
+  ],
+  dfs:[
+    {pct:0,  phase:'Initializing',  text:'Start node pushed onto a LIFO stack. DFS dives as deep as possible along one branch before backtracking.', insight:'Stack [ start ] → go deep, then backtrack on dead ends'},
+    {pct:20, phase:'Diving Deep',   text:'DFS commits to one path all the way down — ignoring nearby alternatives. May overshoot the shortest route entirely.', insight:'The exploration pattern will zigzag, not ripple like BFS'},
+    {pct:45, phase:'Backtracking',  text:'Hit a dead end — stack popped, trying next unvisited neighbor. This is DFS backtracking in action.', insight:'Notice how DFS jumps around rather than expanding evenly'},
+    {pct:70, phase:'Exploring',     text:'DFS has explored many nodes BFS would have skipped. Path found may be much longer than optimal.', insight:'DFS explores deeply first — great for mazes, bad for shortest path'},
+    {pct:90, phase:'Completing',    text:'A path was found! But compare node count with BFS — DFS often explores more nodes for a longer path.', insight:'DFS is NOT optimal — try BFS or A* to compare results'},
+  ],
+  ucs:[
+    {pct:0,  phase:'Initializing',  text:'Start added to min-heap with cost 0. UCS always expands the cheapest frontier node — cost g(n) drives everything.', insight:'Priority Queue sorted by g(n) = total cost from start'},
+    {pct:20, phase:'Cost Tracking', text:'UCS expands by cumulative cost. On a uniform grid, this is identical to BFS — but vital when edge costs vary.', insight:'g(n) = exact distance traveled from start to node'},
+    {pct:45, phase:'Optimizing',    text:'Every dequeued node is settled — we\'ve found the cheapest path to it. This is Dijkstra\'s algorithm at work.', insight:'UCS = Dijkstra\'s. Optimal for any non-negative edge weights'},
+    {pct:70, phase:'Finalizing',    text:'Costs accumulate as the frontier expands. The goal will be dequeued only when the minimum cost path reaches it.', insight:'No cheaper path can exist once a node is settled'},
+    {pct:90, phase:'Path Found',    text:'Goal dequeued at minimum cost! Parent chain traced back to reconstruct the cheapest path from start to end.', insight:'Optimal: this is the minimum-cost path that exists ✓'},
+  ],
+  astar:[
+    {pct:0,  phase:'Initializing',  text:'f(n)=g(n)+h(n). Heuristic h = Manhattan distance to goal. Start inserted with f = h(start) into priority queue.', insight:'h(n)=|Δrow|+|Δcol| — admissible, never overestimates cost'},
+    {pct:20, phase:'Guided Search', text:'Unlike BFS (expands all directions), A* heads toward the goal guided by h(n). Far fewer cells explored for same result.', insight:'Low f-score cells (closer to goal on estimated cost) expand first'},
+    {pct:45, phase:'Balancing',     text:'A* weighs actual cost g + future estimate h. This outperforms pure Greedy (h only) while matching BFS optimality.', insight:'Admissible h guarantees A* finds the optimal path ✓'},
+    {pct:70, phase:'Closing In',    text:'A* locks in on the goal efficiently. Notice significantly fewer amber cells compared to BFS on the same layout.', insight:'A* typically explores 40–80% fewer nodes than BFS!'},
+    {pct:90, phase:'Path Traced',   text:'Optimal path found! Fewer nodes visited, same guaranteed shortest path — that\'s A*\'s superpower.', insight:'A* = the gold standard: optimal quality + maximum efficiency'},
+  ],
+  greedy:[
+    {pct:0,  phase:'Initializing',  text:'Greedy uses ONLY h(n) = Manhattan distance to goal. Zero memory of path cost — it simply rushes toward the finish.', insight:'No g(n) means Greedy ignores how expensive the route was so far'},
+    {pct:20, phase:'Rushing',       text:'Greedy sprints toward the goal, picking whichever cell looks closest. May head directly into a wall or dead end.', insight:'Open space → blazing fast. Obstacles → potentially terrible detours'},
+    {pct:45, phase:'Committed',     text:'Greedy has committed to a direction. It may have locked into a suboptimal route that\'s hard to escape.', insight:'Compare explored area with A* — Greedy explores less but risks quality'},
+    {pct:70, phase:'Near Goal',     text:'Greedy is close to the goal using h alone. The path might look reasonable — or could be far from optimal!', insight:'Good heuristic + open grid = great; walls + obstacles = trouble'},
+    {pct:90, phase:'Done',          text:'Path found! It may or may NOT be shortest. Run A* on the same grid and compare path lengths.', insight:'Greedy trades correctness for speed — your mileage will vary'},
+  ],
+  dls:[
+    {pct:0,  phase:'Initializing',  text:'DLS = DFS with a hard depth cap. Branches beyond the limit are pruned — preventing infinite recursion.', insight:`Depth limit = ${document.getElementById('dls-limit')?.value||25} — no branch goes deeper`},
+    {pct:20, phase:'Diving',        text:'DLS explores deeply like DFS but harder cutoff. Any branch beyond the depth limit is immediately abandoned.', insight:'Cells near the limit boundary get pruned and backtracked'},
+    {pct:45, phase:'Pruning',       text:'Paths exceeding the depth limit get cut off. If the goal is deeper than the limit, DLS returns "no path found".', insight:'Increase depth limit if DLS fails to find an existing path'},
+    {pct:70, phase:'Backtracking',  text:'DLS retreats from dead-ends and depth-exceeded branches, trying other paths within the limit.', insight:'Memory stays bounded — DLS uses O(depth) space only'},
+    {pct:90, phase:'Completing',    text:'Search complete within the depth limit. If no path found, the goal is likely deeper — try raising the limit.', insight:'DLS is the foundation for IDDFS (Iterative Deepening DFS)'},
+  ],
+};
 
-// ── State ─────────────────────────────────────────────────────────────────────
-let ROWS=20, COLS=30;
-let grid=[], pathColorMap={};
-let startCell=null, endCell=null;
-let activeTool='wall', isMouseDown=false, isRunning=false;
-let animIds=[], selectedAlgo='astar';
+let explainSteps=[], lastExplainIdx=-1;
 
-// ── Canvas ────────────────────────────────────────────────────────────────────
-const canvas=document.getElementById('grid-canvas');
-const ctx=canvas.getContext('2d');
-let CS=20; // cell size
-
-function computeLayout(){
-  // available width: window - gameSidebar(148) - statPanel(258) - paddings(~40)
-  const maxW = Math.min(window.innerWidth - 148 - 258 - 40, 920);
-  const maxH = window.innerHeight - 210;
-  CS = Math.floor(Math.min(maxW/COLS, maxH/ROWS));
-  CS = Math.max(8, Math.min(CS, 24));
-  canvas.width  = COLS*CS;
-  canvas.height = ROWS*CS;
+function initExplain(algo){
+  explainSteps=ALGO_EXPLAIN[algo]||[];
+  lastExplainIdx=-1;
+  document.getElementById('explain-section').style.display='block';
+  if(explainSteps.length){
+    const s=explainSteps[0];
+    document.getElementById('explain-phase').textContent   = s.phase;
+    document.getElementById('explain-text').textContent    = s.text;
+    document.getElementById('explain-insight').textContent = s.insight||'';
+    lastExplainIdx=0;
+  }
+}
+function updateExplain(pct){
+  for(let i=explainSteps.length-1;i>=0;i--){
+    if(pct>=explainSteps[i].pct&&i>lastExplainIdx){
+      const s=explainSteps[i];
+      document.getElementById('explain-phase').textContent   = s.phase;
+      document.getElementById('explain-text').textContent    = s.text;
+      document.getElementById('explain-insight').textContent = s.insight||'';
+      lastExplainIdx=i; break;
+    }
+  }
+}
+function closeExplain(found, stats){
+  if(found){
+    document.getElementById('explain-phase').textContent   = '✅ Complete';
+    document.getElementById('explain-text').textContent    = `Path of ${stats.pathLength} steps found. ${stats.nodesExplored} nodes explored in ${stats.timeMs}ms.`;
+    document.getElementById('explain-insight').textContent = stats.optimal
+      ? 'This is guaranteed to be the shortest possible path ✓'
+      : 'Note: This path is NOT guaranteed to be optimal';
+  } else {
+    document.getElementById('explain-phase').textContent   = '❌ No Path';
+    document.getElementById('explain-text').textContent    = 'Algorithm exhausted all reachable nodes without reaching the goal.';
+    document.getElementById('explain-insight').textContent = 'No path exists — try clearing some walls or placing start/end differently';
+  }
 }
 
-// ── Draw ──────────────────────────────────────────────────────────────────────
+// ── Grid State ────────────────────────────────────────────────────────────────
+const CELL={EMPTY:0,WALL:1,START:2,END:3,VISITED:4,PATH:5};
+let ROWS=20,COLS=30;
+let grid=[],pathColorMap={};
+let startCell=null,endCell=null;
+let activeTool='wall',isMouseDown=false,isRunning=false;
+let animIds=[],selectedAlgo='astar';
+
+const canvas=document.getElementById('grid-canvas');
+const ctx=canvas.getContext('2d');
+let CS=20;
+
+function computeLayout(){
+  const maxW=Math.min(window.innerWidth-148-262-40,920);
+  const maxH=window.innerHeight-215;
+  CS=Math.floor(Math.min(maxW/COLS,maxH/ROWS));
+  CS=Math.max(8,Math.min(CS,22));
+  canvas.width=COLS*CS;
+  canvas.height=ROWS*CS;
+}
+
+// ── Drawing — all square blocks, no circles ───────────────────────────────────
 function drawCell(r,c,opts={}){
-  const th=TH(), x=c*CS, y=r*CS, t=grid[r][c], g=CS>12?1:0;
-  // base
+  const th=TH(),x=c*CS,y=r*CS,t=grid[r][c];
+  const g=CS>12?1:0;  // 1px gap for visual separation between cells
+
+  // clear to base empty colour first
   ctx.fillStyle=th.empty;
   ctx.fillRect(x,y,CS,CS);
   if(t===CELL.EMPTY) return;
 
   if(t===CELL.WALL){
+    // Slightly lighter top-left edge to give subtle 3D depth to wall blocks
     ctx.fillStyle=opts.pop?th.wallPop:th.wall;
     ctx.fillRect(x+g,y+g,CS-g*2,CS-g*2);
+    if(!opts.pop&&CS>14){
+      // small inner highlight — top/left edges lighter
+      ctx.fillStyle='rgba(255,255,255,0.04)';
+      ctx.fillRect(x+g,y+g,CS-g*2,1);
+      ctx.fillRect(x+g,y+g,1,CS-g*2);
+    }
     return;
   }
+
   if(t===CELL.VISITED){
-    ctx.fillStyle=opts.pop?th.visitedPop:th.visited;
-    const i=g+1;
+    // Bright amber square — the "fire spreading" effect
+    const color=opts.pop?th.visitedPop:th.visited;
+    ctx.fillStyle=color;
+    const i=g+1;  // slightly inset for breathing room
     ctx.fillRect(x+i,y+i,CS-i*2,CS-i*2);
+    // Subtle inner glow — brighter center pixel to look luminous
+    if(CS>14&&!opts.pop){
+      ctx.fillStyle='rgba(255,255,220,0.18)';
+      const d=Math.floor((CS-i*2)*0.3);
+      const ox=x+i+Math.floor((CS-i*2-d)/2);
+      const oy=y+i+Math.floor((CS-i*2-d)/2);
+      ctx.fillRect(ox,oy,d,d);
+    }
     return;
   }
+
   if(t===CELL.PATH){
+    // Gradient-coloured fire trail block — brighter + larger than visited
     const color=opts.color||pathColorMap[`${r},${c}`]||`rgb(${th.pathFrom.join(',')})`;
     ctx.fillStyle=color;
     ctx.fillRect(x+g,y+g,CS-g*2,CS-g*2);
+    // Bright center highlight — path looks like a glowing ember
+    if(CS>12){
+      ctx.fillStyle='rgba(255,255,255,0.22)';
+      const hw=Math.max(2,Math.floor(CS*0.28));
+      ctx.fillRect(x+(CS-hw)/2,y+(CS-hw)/2,hw,hw);
+    }
     return;
   }
-  // START / END — filled square + small white center dot
+
+  // START / END — full coloured block + white dot
   ctx.fillStyle=(t===CELL.START)?th.start:th.end;
-  const pad=Math.max(1,Math.floor(CS*.1));
+  const pad=Math.max(1,Math.floor(CS*.06));
   ctx.fillRect(x+pad,y+pad,CS-pad*2,CS-pad*2);
-  ctx.fillStyle='rgba(255,255,255,0.4)';
-  const dot=Math.max(2,Math.floor(CS*.2));
+  // White center accent
+  ctx.fillStyle='rgba(255,255,255,0.45)';
+  const dot=Math.max(2,Math.floor(CS*.22));
   ctx.fillRect(x+(CS-dot)/2,y+(CS-dot)/2,dot,dot);
 }
 
 function drawGridLines(){
-  ctx.strokeStyle=TH().gridLine; ctx.lineWidth=0.8;
-  for(let r=0;r<=ROWS;r++){ ctx.beginPath();ctx.moveTo(0,r*CS);ctx.lineTo(COLS*CS,r*CS);ctx.stroke(); }
-  for(let c=0;c<=COLS;c++){ ctx.beginPath();ctx.moveTo(c*CS,0);ctx.lineTo(c*CS,ROWS*CS);ctx.stroke(); }
+  ctx.strokeStyle=TH().gridLine;ctx.lineWidth=0.8;
+  for(let r=0;r<=ROWS;r++){ctx.beginPath();ctx.moveTo(0,r*CS);ctx.lineTo(COLS*CS,r*CS);ctx.stroke();}
+  for(let c=0;c<=COLS;c++){ctx.beginPath();ctx.moveTo(c*CS,0);ctx.lineTo(c*CS,ROWS*CS);ctx.stroke();}
 }
 
 function drawAll(){
@@ -586,23 +741,23 @@ function drawAll(){
   for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) if(grid[r][c]!==CELL.EMPTY) drawCell(r,c);
 }
 
+// Wall pop: bright orange flash → settles to dark brown
 function popWall(r,c){
-  grid[r][c]=CELL.WALL; drawCell(r,c,{pop:true});
-  const id=setTimeout(()=>drawCell(r,c,{pop:false}),POP_MS);
-  animIds.push(id);
+  grid[r][c]=CELL.WALL;drawCell(r,c,{pop:true});
+  const id=setTimeout(()=>drawCell(r,c,{pop:false}),110);animIds.push(id);
 }
 
 // ── Grid Init ─────────────────────────────────────────────────────────────────
 function makeEmptyGrid(){
   grid=Array.from({length:ROWS},()=>Array(COLS).fill(CELL.EMPTY));
   pathColorMap={};
-  startCell=[Math.floor(ROWS/2), Math.floor(COLS*.08)];
-  endCell  =[Math.floor(ROWS/2), Math.floor(COLS*.92)];
+  startCell=[Math.floor(ROWS/2),Math.floor(COLS*.08)];
+  endCell  =[Math.floor(ROWS/2),Math.floor(COLS*.92)];
   grid[startCell[0]][startCell[1]]=CELL.START;
   grid[endCell[0]][endCell[1]]=CELL.END;
 }
 function initGrid(seed=true){
-  makeEmptyGrid(); computeLayout(); drawAll();
+  makeEmptyGrid();computeLayout();drawAll();
   if(seed) randomWalls(false);
 }
 
@@ -611,7 +766,7 @@ function cellFromEvent(e){
   const rect=canvas.getBoundingClientRect();
   const ex=(e.touches?e.touches[0].clientX:e.clientX)-rect.left;
   const ey=(e.touches?e.touches[0].clientY:e.clientY)-rect.top;
-  const c=Math.floor(ex/CS), r=Math.floor(ey/CS);
+  const c=Math.floor(ex/CS),r=Math.floor(ey/CS);
   if(r<0||r>=ROWS||c<0||c>=COLS) return null;
   return [r,c];
 }
@@ -620,12 +775,12 @@ function applyTool(cell){
   const [r,c]=cell;
   if(activeTool==='start'){
     if(endCell&&endCell[0]===r&&endCell[1]===c) return;
-    if(startCell){grid[startCell[0]][startCell[1]]=CELL.EMPTY;drawCell(startCell[0],startCell[1])}
+    if(startCell){grid[startCell[0]][startCell[1]]=CELL.EMPTY;drawCell(startCell[0],startCell[1]);}
     startCell=[r,c];grid[r][c]=CELL.START;drawCell(r,c);return;
   }
   if(activeTool==='end'){
     if(startCell&&startCell[0]===r&&startCell[1]===c) return;
-    if(endCell){grid[endCell[0]][endCell[1]]=CELL.EMPTY;drawCell(endCell[0],endCell[1])}
+    if(endCell){grid[endCell[0]][endCell[1]]=CELL.EMPTY;drawCell(endCell[0],endCell[1]);}
     endCell=[r,c];grid[r][c]=CELL.END;drawCell(r,c);return;
   }
   if(startCell&&startCell[0]===r&&startCell[1]===c) return;
@@ -636,12 +791,13 @@ function applyTool(cell){
     grid[r][c]=CELL.EMPTY;drawCell(r,c);
   }
 }
+
 canvas.addEventListener('mousedown',e=>{if(!isRunning){isMouseDown=true;applyTool(cellFromEvent(e))}});
 canvas.addEventListener('mousemove',e=>{if(isMouseDown&&!isRunning)applyTool(cellFromEvent(e))});
 window.addEventListener('mouseup',()=>isMouseDown=false);
 canvas.addEventListener('touchstart',e=>{e.preventDefault();if(!isRunning){isMouseDown=true;applyTool(cellFromEvent(e))}},{passive:false});
 canvas.addEventListener('touchmove', e=>{e.preventDefault();if(isMouseDown&&!isRunning)applyTool(cellFromEvent(e))},{passive:false});
-canvas.addEventListener('touchend', ()=>isMouseDown=false);
+canvas.addEventListener('touchend',()=>isMouseDown=false);
 
 // ── Tool Buttons ──────────────────────────────────────────────────────────────
 ['wall','start','end','erase'].forEach(tool=>{
@@ -652,13 +808,12 @@ canvas.addEventListener('touchend', ()=>isMouseDown=false);
   });
 });
 
-// ── Algorithm Tabs ────────────────────────────────────────────────────────────
+// ── Algo Tabs ─────────────────────────────────────────────────────────────────
 function updateGameCard(algo){
-  document.getElementById('game-card-bfs').classList.toggle('visible', algo==='bfs');
+  document.getElementById('game-card-bfs').classList.toggle('visible',   algo==='bfs');
   document.getElementById('game-card-astar').classList.toggle('visible', algo==='astar');
   document.getElementById('game-hint').style.display=(algo==='bfs'||algo==='astar')?'none':'flex';
 }
-
 document.querySelectorAll('.algo-tab').forEach(tab=>{
   tab.addEventListener('click',()=>{
     if(isRunning) return;
@@ -666,11 +821,9 @@ document.querySelectorAll('.algo-tab').forEach(tab=>{
     tab.classList.add('active');
     selectedAlgo=tab.dataset.algo;
     document.getElementById('dls-wrap').classList.toggle('visible',selectedAlgo==='dls');
-    updateAlgoInfo(selectedAlgo);
-    updateGameCard(selectedAlgo);
+    updateAlgoInfo(selectedAlgo);updateGameCard(selectedAlgo);
   });
 });
-
 function updateAlgoInfo(algo){
   const m=ALGO_META[algo];
   document.getElementById('ai-name').textContent=m.name;
@@ -679,10 +832,11 @@ function updateAlgoInfo(algo){
 }
 
 // ── Maze Generators ───────────────────────────────────────────────────────────
+const VIS_DELAY=24, PATH_DELAY=38, MAZE_DELAY=15, POP_MS=110;
+
 document.getElementById('btn-maze').addEventListener('click',()=>{
   if(isRunning) return;
-  clearAnimIds();resetPath();clearWalls();
-  addLog('Generating maze…','info');
+  clearAnimIds();resetPath();clearWalls();addLog('Generating maze…','info');
   const walls=[];
   function divide(r1,c1,r2,c2){
     if(r2-r1<2||c2-c1<2) return;
@@ -705,8 +859,7 @@ document.getElementById('btn-maze').addEventListener('click',()=>{
 
 document.getElementById('btn-random').addEventListener('click',()=>{
   if(isRunning) return;
-  clearAnimIds();resetPath();clearWalls();
-  addLog('Generating random walls…','info');
+  clearAnimIds();resetPath();clearWalls();addLog('Generating random walls…','info');
   randomWalls(true);
 });
 
@@ -716,14 +869,14 @@ function randomWalls(animated){
     if(grid[r][c]===CELL.EMPTY&&Math.random()<.27) walls.push([r,c]);
   for(let i=walls.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[walls[i],walls[j]]=[walls[j],walls[i]];}
   if(animated) animateWalls(walls,'🎲 Random walls ready!');
-  else{ walls.forEach(([r,c])=>{grid[r][c]=CELL.WALL;});drawAll(); }
+  else{walls.forEach(([r,c])=>{grid[r][c]=CELL.WALL;});drawAll();}
 }
 
 function animateWalls(walls,doneMsg){
-  walls.forEach(([r,c],i)=>{ const id=setTimeout(()=>{if(grid[r][c]===CELL.EMPTY)popWall(r,c)},i*MAZE_DELAY);animIds.push(id); });
+  walls.forEach(([r,c],i)=>{const id=setTimeout(()=>{if(grid[r][c]===CELL.EMPTY)popWall(r,c)},i*MAZE_DELAY);animIds.push(id);});
   const done=setTimeout(()=>{
-    if(startCell){grid[startCell[0]][startCell[1]]=CELL.START;drawCell(startCell[0],startCell[1])}
-    if(endCell)  {grid[endCell[0]][endCell[1]]=CELL.END;drawCell(endCell[0],endCell[1])}
+    if(startCell){grid[startCell[0]][startCell[1]]=CELL.START;drawCell(startCell[0],startCell[1]);}
+    if(endCell)  {grid[endCell[0]][endCell[1]]=CELL.END;drawCell(endCell[0],endCell[1]);}
     addLog(doneMsg,'success');showToast(doneMsg,'success');
   },walls.length*MAZE_DELAY+POP_MS+40);
   animIds.push(done);
@@ -736,10 +889,14 @@ function clearWalls(){
 
 // ── Clear / Reset ─────────────────────────────────────────────────────────────
 document.getElementById('btn-clear').addEventListener('click',()=>{
-  if(isRunning)stopAnim();clearAnimIds();initGrid(false);resetStats();setStatus('idle','Idle');addLog('Grid cleared','info');
+  if(isRunning) stopAnim();clearAnimIds();initGrid(false);resetStats();setStatus('idle','Idle');
+  document.getElementById('explain-section').style.display='none';
+  addLog('Grid cleared','info');
 });
 document.getElementById('btn-reset-path').addEventListener('click',()=>{
-  if(isRunning)stopAnim();clearAnimIds();resetPath();resetStats();setStatus('idle','Idle');addLog('Path reset','info');
+  if(isRunning) stopAnim();clearAnimIds();resetPath();resetStats();setStatus('idle','Idle');
+  document.getElementById('explain-section').style.display='none';
+  addLog('Path reset','info');
 });
 function resetPath(){
   pathColorMap={};
@@ -756,17 +913,19 @@ function stopAnim(){
 
 // ── Run Algorithm ─────────────────────────────────────────────────────────────
 document.getElementById('btn-run').addEventListener('click',runAlgorithm);
+
 async function runAlgorithm(){
   if(!startCell||!endCell){showToast('Place start and end cells first!','error');return;}
   if(isRunning) return;
   clearAnimIds();resetPath();resetStats();
   isRunning=true;document.getElementById('btn-run').disabled=true;
 
-  const algo=selectedAlgo, limit=parseInt(document.getElementById('dls-limit').value)||25;
+  const algo=selectedAlgo,limit=parseInt(document.getElementById('dls-limit').value)||25;
   const payload=grid.map(row=>row.map(v=>v===CELL.WALL?1:0));
   setStatus('running','Running…');
   document.getElementById('status-dot').classList.add('pulse');
   document.getElementById('progress-wrap').style.display='block';
+  initExplain(algo);
   addLog(`Running ${ALGO_META[algo].name}…`,'info');
 
   let result;
@@ -781,28 +940,33 @@ async function runAlgorithm(){
     addLog(`Error: ${err.message}`,'error');showToast(err.message,'error');
     stopAnim();setStatus('idle','Error');
     document.getElementById('status-dot').classList.remove('pulse');
+    document.getElementById('explain-section').style.display='none';
     return;
   }
 
-  const {visited,path,stats}=result, total=visited.length+path.length;
-  path.forEach(([r,c],i)=>{ pathColorMap[`${r},${c}`]=pathGradColor(i,path.length); });
+  const {visited,path,stats}=result,total=visited.length+path.length;
+  // Pre-compute fire-trail gradient for every path cell
+  path.forEach(([r,c],i)=>{pathColorMap[`${r},${c}`]=pathGradColor(i,path.length);});
 
+  // ── Animate visited (spreading amber fire) ────────────────────────────────
   visited.forEach(([r,c],i)=>{
     const id=setTimeout(()=>{
       if(!isRunning) return;
       if(grid[r][c]!==CELL.START&&grid[r][c]!==CELL.END){
         grid[r][c]=CELL.VISITED;
-        const flash=i%5===0;
+        const flash=i%7===0;
         drawCell(r,c,{pop:flash});
-        if(flash){const s=setTimeout(()=>drawCell(r,c,{pop:false}),70);animIds.push(s);}
+        if(flash){const s=setTimeout(()=>drawCell(r,c,{pop:false}),65);animIds.push(s);}
       }
       const pct=Math.round((i/total)*100);
       document.getElementById('progress-fill').style.width=pct+'%';
       document.getElementById('progress-pct').textContent=pct+'%';
+      if(i%Math.max(1,Math.floor(visited.length/20))===0) updateExplain(Math.round(i/visited.length*90));
     },i*VIS_DELAY);
     animIds.push(id);
   });
 
+  // ── Animate path (glowing fire trail, bright → deep orange gradient) ───────
   const ps=visited.length*VIS_DELAY;
   path.forEach(([r,c],i)=>{
     const id=setTimeout(()=>{
@@ -810,10 +974,10 @@ async function runAlgorithm(){
       if(grid[r][c]!==CELL.START&&grid[r][c]!==CELL.END){
         grid[r][c]=CELL.PATH;
         const color=pathColorMap[`${r},${c}`];
-        // flash white then gradient block
-        ctx.fillStyle='rgba(255,255,255,0.6)';
+        // Burst white flash first → then gradient block settles in
+        ctx.fillStyle='rgba(255,245,200,0.75)';
         ctx.fillRect(c*CS,r*CS,CS,CS);
-        const s=setTimeout(()=>drawCell(r,c,{color}),75);animIds.push(s);
+        const s=setTimeout(()=>drawCell(r,c,{color}),70);animIds.push(s);
       }
       const pct=Math.round(((visited.length+i)/total)*100);
       document.getElementById('progress-fill').style.width=pct+'%';
@@ -822,9 +986,9 @@ async function runAlgorithm(){
     animIds.push(id);
   });
 
+  // ── Done ──────────────────────────────────────────────────────────────────
   const done=setTimeout(()=>{
-    isRunning=false;
-    document.getElementById('btn-run').disabled=false;
+    isRunning=false;document.getElementById('btn-run').disabled=false;
     document.getElementById('status-dot').classList.remove('pulse');
     document.getElementById('progress-fill').style.width='100%';
     document.getElementById('progress-pct').textContent='100%';
@@ -845,18 +1009,19 @@ async function runAlgorithm(){
       setStatus('notfound','No Path');
       showToast('No path found!','error');addLog('No path found.','error');
     }
+    closeExplain(stats.found,stats);
     setTimeout(()=>document.getElementById('progress-wrap').style.display='none',1500);
   },ps+path.length*PATH_DELAY+80);
   animIds.push(done);
 }
 
-// ── Grid Size Select ──────────────────────────────────────────────────────────
+// ── Grid Size ─────────────────────────────────────────────────────────────────
 document.getElementById('grid-size-select').addEventListener('change',e=>{
   if(isRunning) stopAnim();
   clearAnimIds();
-  const [c,r]=e.target.value.split('x').map(Number);
-  COLS=c; ROWS=r;
-  initGrid(false);resetStats();setStatus('idle','Idle');
+  const[c,r]=e.target.value.split('x').map(Number);
+  COLS=c;ROWS=r;initGrid(false);resetStats();setStatus('idle','Idle');
+  document.getElementById('explain-section').style.display='none';
   addLog(`Grid → ${COLS}×${ROWS}`,'info');
 });
 window.addEventListener('resize',()=>{computeLayout();drawAll();});
@@ -877,8 +1042,7 @@ let toastTimeout;
 function showToast(msg,type='info'){
   const t=document.getElementById('toast');
   t.textContent=msg;t.className=`visible ${type}`;
-  clearTimeout(toastTimeout);
-  toastTimeout=setTimeout(()=>t.className='',3200);
+  clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>t.className='',3200);
 }
 function addLog(msg,type=''){
   const area=document.getElementById('log-area');
@@ -894,8 +1058,8 @@ initGrid(true);
 updateAlgoInfo('astar');
 updateLegend();
 updateGameCard('astar');
-addLog('PathMind ready · default seed loaded','info');
-addLog('Select BFS or A* to unlock a game on the left!','');
+addLog('PathMind ready — black & orange theme','info');
+addLog('Click ▶ Run to see live algorithm explanations','');
 </script>
 </body>
 </html>

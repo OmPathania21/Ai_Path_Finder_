@@ -394,8 +394,8 @@ let zomMoveTimer=0, frameCount=0;
 function loop(){
   if(!gameActive) return;
   frameCount++;
-  // Zombie moves every 8 frames (~4 steps/sec at 30fps)
-  if(frameCount%8===0) moveZombie();
+  // Zombie moves every 20 frames (~1.5 steps/sec at 30fps)
+  if(frameCount%20===0) moveZombie();
   draw();
 }
 
@@ -438,8 +438,8 @@ function startGame(){
     if(timeLeft<=0) endGame(true);
   },1000);
 
-  // A* recalc every 600ms
-  astarInterval=setInterval(()=>{ if(gameActive) updateAstar(); },600);
+  // A* recalc every 1200ms
+  astarInterval=setInterval(()=>{ if(gameActive) updateAstar(); },1200);
 
   startLoop();
 }
