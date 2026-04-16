@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Cave Stalker — DFS AI | Ai Path Finder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;background:#080204;color:#fff;font-family:'Inter',sans-serif;overflow:hidden}
+    body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;
+      background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(168,85,247,.06) 0%,transparent 60%),#080204}
+    .topbar{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:620px;padding:8px 4px}
+    .back-btn{text-decoration:none;color:#f97316;font-size:.75rem;font-weight:600;border:1px solid rgba(249,115,22,.3);padding:5px 12px;border-radius:8px;transition:all .2s}
+    .back-btn:hover{border-color:#f97316;background:rgba(249,115,22,.08)}
+    .game-title{font-family:'Orbitron',sans-serif;font-size:1.05rem;font-weight:900;letter-spacing:2px;background:linear-gradient(90deg,#a855f7,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .algo-badge{font-size:.65rem;font-weight:700;letter-spacing:1px;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.3);color:#a855f7;padding:4px 10px;border-radius:12px}
+    .hud{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:620px;padding:0 4px 8px}
+    .hud-item{display:flex;flex-direction:column;align-items:center;gap:2px}
+    .hud-label{font-size:.57rem;text-transform:uppercase;letter-spacing:1px;color:#6b7280}
+    .hud-val{font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:700;color:#f97316}
+    #canvas{display:block;image-rendering:pixelated;box-shadow:0 0 60px rgba(168,85,247,.07),0 0 30px rgba(0,0,0,.8)}
+    .instructions{display:flex;gap:8px;align-items:center;font-size:.64rem;color:#4b5563;margin-top:5px;width:100%;max-width:620px;justify-content:center}
+    .instructions span{color:#78716c}
+    .overlay{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(0,0,0,.93);backdrop-filter:blur(8px);z-index:10}
+    .overlay.hidden{display:none}
+    .overlay-icon{font-size:3.5rem}
+    .overlay-title{font-family:'Orbitron',sans-serif;font-size:1.8rem;font-weight:900}
+    .overlay-title.pur{background:linear-gradient(90deg,#a855f7,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .overlay-title.org{background:linear-gradient(90deg,#f97316,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .overlay-sub{font-size:.88rem;color:#6b7280;text-align:center;line-height:1.6;max-width:390px}
+    .overlay-btn{padding:12px 30px;border-radius:10px;border:none;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:.82rem;font-weight:700;transition:all .2s;letter-spacing:.5px;margin-top:6px;background:linear-gradient(135deg,#a855f7,#f97316);color:#fff}
+    .overlay-btn:hover{transform:translateY(-2px);box-shadow:0 0 24px rgba(168,85,247,.55)}
+    .algo-explain{font-size:.7rem;color:#a855f7;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);padding:5px 14px;border-radius:10px;letter-spacing:.4px;text-align:center;max-width:350px}
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/" class="back-btn">← Ai Path Finder</a>
+  <div class="game-title">CAVE STALKER</div>
+  <div class="algo-badge">DFS AI</div>
+</div>
+
+<div class="hud">
+  <div class="hud-item"><div class="hud-label">Crystals</div><div class="hud-val" id="hud-crystals">0/5</div></div>
+  <div class="hud-item"><div class="hud-label">DFS Depth</div><div class="hud-val" id="hud-depth" style="color:#a855f7">—</div></div>
+  <div class="hud-item"><div class="hud-label">Distance</div><div class="hud-val" id="hud-dist" style="color:#22d3ee">—</div></div>
+</div>
+
+<canvas id="canvas"></canvas>
+
+<div class="instructions">
+  <span>WASD / Arrows</span> to move &nbsp;·&nbsp;
+  Collect <span>5 crystals</span> to escape &nbsp;·&nbsp;
+  <span>DFS stalker</span> goes deep before backtracking!
+</div>
+
+<!-- Overlays -->
+<div class="overlay" id="start-overlay">
+  <div class="overlay-icon">🕯️</div>
+  <div class="overlay-title pur">CAVE STALKER</div>
+  <div class="overlay-sub">A shadow creature roams the dungeon using <strong style="color:#a855f7">Depth-First Search</strong> to hunt you. It commits deep into one corridor before backtracking — predict its behavior to escape!</div>
+  <div class="algo-explain">🕳️ DFS: LIFO stack — goes deepest first<br/>Watch the purple trail to see how deep it searches!</div>
+  <button class="overlay-btn" id="start-btn">ENTER THE CAVE</button>
+</div>
+
+<div class="overlay hidden" id="win-overlay">
+  <div class="overlay-icon">💎</div>
+  <div class="overlay-title org">ESCAPED!</div>
+  <div class="overlay-sub">You collected all 5 crystals while the DFS stalker was busy deep in the wrong corridor!</div>
+  <button class="overlay-btn" id="win-btn">PLAY AGAIN</button>
+</div>
+
+<div class="overlay hidden" id="dead-overlay">
+  <div class="overlay-icon">👻</div>
+  <div class="overlay-title pur">CAUGHT!</div>
+  <div class="overlay-sub">The DFS stalker's deep path led it straight to you. It explored every branch until it found you.</div>
+  <button class="overlay-btn" id="dead-btn">TRY AGAIN</button>
+</div>
+
+<script>
+const ROWS=18, COLS=26;
+const CS=Math.min(Math.floor((window.innerHeight-170)/ROWS), Math.floor((window.innerWidth-16)/COLS), 28);
+const canvas=document.getElementById('canvas');
+canvas.width=COLS*CS; canvas.height=ROWS*CS;
+const ctx=canvas.getContext('2d');
+
+// ── DFS (iterative, LIFO) ─────────────────────────────────────────────────────
+// Key DFS behavior: goes DEEP along one branch before backtracking.
+// Uses a stack (pop from end). The resulting path can be very long/indirect.
+function dfsFind(grid, sr, sc, er, ec) {
+  const stack      = [[sr, sc]];
+  const visited    = new Set([`${sr},${sc}`]);
+  const parent     = new Map();
+  const depthMap   = new Map([[`${sr},${sc}`, 0]]);
+  let   maxDepth   = 0;
+
+  while (stack.length) {
+    const [r, c] = stack.pop();            // LIFO — this is what makes it DFS!
+    const d = depthMap.get(`${r},${c}`) || 0;
+    maxDepth = Math.max(maxDepth, d);
+
+    if (r === er && c === ec) {
+      const path = [];
+      let key = `${er},${ec}`, sk = `${sr},${sc}`;
+      while (key !== sk) {
+        const [pr, pc] = key.split(',').map(Number);
+        path.unshift([pr, pc]);
+        key = parent.get(key) || sk;
+      }
+      return { path, maxDepth };
+    }
+
+    // Neighbors pushed in reverse so DFS prefers top/left — creates interesting patterns
+    for (const [dr, dc] of [[0,1],[0,-1],[1,0],[-1,0]]) {
+      const nr=r+dr, nc=c+dc;
+      if (nr<0||nr>=ROWS||nc<0||nc>=COLS||grid[nr][nc]===1) continue;
+      const k=`${nr},${nc}`;
+      if (visited.has(k)) continue;
+      visited.add(k); parent.set(k,`${r},${c}`);
+      depthMap.set(k, d+1); stack.push([nr, nc]);
+    }
+  }
+  return { path: [], maxDepth };
+}
+
+// ── Grid / State ──────────────────────────────────────────────────────────────
+let grid, crystals, player, stalker, stalkerPath, gameActive, dfsInterval, frameCount;
+
+function genGrid() {
+  const g = Array.from({length:ROWS}, () => Array(COLS).fill(0));
+  for (let r=0;r<ROWS;r++) { g[r][0]=1; g[r][COLS-1]=1; }
+  for (let c=0;c<COLS;c++) { g[0][c]=1; g[ROWS-1][c]=1; }
+  // Cave-like walls using grid pattern + noise
+  for (let r=2;r<ROWS-2;r++) for (let c=2;c<COLS-2;c++) {
+    if (r%2===0 && c%2===0) { g[r][c]=1; continue; }
+    if (Math.random()<0.16) g[r][c]=1;
+  }
+  // Clear player spawn (top-left) + stalker spawn (bottom-right)
+  for (let r=1;r<=3;r++) for (let c=1;c<=4;c++) g[r][c]=0;
+  for (let r=ROWS-4;r<ROWS-1;r++) for (let c=COLS-5;c<COLS-1;c++) g[r][c]=0;
+  return g;
+}
+
+function placeCrystals(g) {
+  const list = [];
+  let tries = 0;
+  while (list.length < 5 && tries < 500) {
+    tries++;
+    const r = 2 + Math.floor(Math.random()*(ROWS-4));
+    const c = 4 + Math.floor(Math.random()*(COLS-8));
+    if (g[r][c]===0 && !list.find(([x,y])=>x===r&&y===c)) list.push([r,c]);
+  }
+  return list;
+}
+
+function initGame() {
+  grid=genGrid(); crystals=placeCrystals(grid);
+  player={r:1,c:1}; stalker={r:ROWS-2,c:COLS-2};
+  stalkerPath=[]; frameCount=0; gameActive=true;
+  updateDFS(); updateHUD();
+}
+
+function updateDFS() {
+  if (!gameActive) return;
+  const res = dfsFind(grid, stalker.r, stalker.c, player.r, player.c);
+  stalkerPath = res.path;
+  document.getElementById('hud-depth').textContent = res.maxDepth || '—';
+}
+
+function updateHUD() {
+  document.getElementById('hud-crystals').textContent = `${5-crystals.length}/5`;
+  const d = Math.abs(player.r-stalker.r) + Math.abs(player.c-stalker.c);
+  const el = document.getElementById('hud-dist');
+  el.textContent = d; el.style.color = d<=3?'#ef4444':d<=6?'#fbbf24':'#22d3ee';
+}
+
+// ── Movement ──────────────────────────────────────────────────────────────────
+function movePlayer(dr, dc) {
+  if (!gameActive) return;
+  const nr=player.r+dr, nc=player.c+dc;
+  if (nr<0||nr>=ROWS||nc<0||nc>=COLS||grid[nr][nc]===1) return;
+  player.r=nr; player.c=nc;
+  const ci = crystals.findIndex(([cr,cc])=>cr===nr&&cc===nc);
+  if (ci>=0) { crystals.splice(ci,1); if(crystals.length===0){endGame(true);return;} }
+  checkCatch(); updateHUD();
+}
+
+function moveStalker() {
+  if (!gameActive || !stalkerPath.length) return;
+  const [nr,nc] = stalkerPath.shift();
+  if (grid[nr][nc]!==1) { stalker.r=nr; stalker.c=nc; }
+  checkCatch();
+}
+
+function checkCatch() {
+  if (stalker.r===player.r && stalker.c===player.c) endGame(false);
+}
+
+// ── Draw ──────────────────────────────────────────────────────────────────────
+function draw() {
+  ctx.fillStyle='#080204';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // Grid cells
+  for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) {
+    const x=c*CS, y=r*CS;
+    if (grid[r][c]===1) {
+      ctx.fillStyle='#2a0f18'; ctx.fillRect(x,y,CS,CS);
+      ctx.strokeStyle='rgba(90,25,45,0.4)'; ctx.lineWidth=.5;
+      ctx.strokeRect(x+.5,y+.5,CS-1,CS-1);
+    } else {
+      ctx.fillStyle='#130a0f'; ctx.fillRect(x,y,CS,CS);
+    }
+  }
+
+  // DFS path trail — purple gradient showing how deep the search went
+  if (stalkerPath.length > 0) {
+    stalkerPath.forEach(([r,c],i) => {
+      const alpha = 0.06 + (i / stalkerPath.length) * 0.18;
+      ctx.fillStyle = `rgba(168,85,247,${alpha})`;
+      ctx.fillRect(c*CS+2, r*CS+2, CS-4, CS-4);
+    });
+  }
+
+  // Crystals — pulsing cyan glow
+  const t = Date.now()/700;
+  crystals.forEach(([r,c]) => {
+    const p = 0.8 + Math.sin(t + r + c*0.7) * 0.2;
+    const x=c*CS+CS/2, y=r*CS+CS/2, s=CS*0.3*p;
+    ctx.shadowColor='rgba(34,211,238,.8)'; ctx.shadowBlur=14*p;
+    ctx.fillStyle='#22d3ee';
+    ctx.fillRect(x-s/2, y-s/2, s, s);
+    ctx.shadowBlur=0;
+  });
+
+  // Torch glow around player
+  const px=player.c*CS+CS/2, py=player.r*CS+CS/2;
+  const tg=ctx.createRadialGradient(px,py,0,px,py,CS*3.8);
+  tg.addColorStop(0,'rgba(249,115,22,0.22)');
+  tg.addColorStop(0.5,'rgba(249,115,22,0.06)');
+  tg.addColorStop(1,'transparent');
+  ctx.fillStyle=tg; ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // Stalker — purple with red eyes
+  const sx=stalker.c*CS, sy=stalker.r*CS;
+  ctx.shadowColor='rgba(168,85,247,.9)'; ctx.shadowBlur=22;
+  ctx.fillStyle='#a855f7'; ctx.fillRect(sx+2,sy+2,CS-4,CS-4);
+  ctx.shadowBlur=0;
+  ctx.fillStyle='#ef4444';
+  const ew=Math.max(2,CS*.15);
+  ctx.fillRect(sx+CS*.22,sy+CS*.28,ew,ew);
+  ctx.fillRect(sx+CS*.62,sy+CS*.28,ew,ew);
+
+  // Player — orange torch bearer
+  ctx.shadowColor='rgba(249,115,22,.95)'; ctx.shadowBlur=20;
+  ctx.fillStyle='#f97316'; ctx.fillRect(px-CS/2+2,py-CS/2+2,CS-4,CS-4);
+  ctx.shadowBlur=0;
+  ctx.fillStyle='rgba(255,255,255,.5)';
+  const dot=Math.max(2,CS*.22); ctx.fillRect(px-dot/2,py-dot/2,dot,dot);
+
+  // Danger vignette
+  const dist=Math.abs(player.r-stalker.r)+Math.abs(player.c-stalker.c);
+  if (dist<=4) {
+    ctx.fillStyle=`rgba(168,85,247,${(5-dist)*.045})`;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+}
+
+// ── Game Loop ─────────────────────────────────────────────────────────────────
+let rafId;
+function loop() {
+  if (!gameActive) return;
+  frameCount++;
+  if (frameCount%22===0) moveStalker();  // ~1.3 steps/sec at 30fps
+  draw();
+  rafId = requestAnimationFrame(loop);
+}
+
+function endGame(won) {
+  gameActive=false; clearInterval(dfsInterval); cancelAnimationFrame(rafId);
+  setTimeout(() => document.getElementById(won?'win-overlay':'dead-overlay').classList.remove('hidden'), 300);
+}
+
+// ── Input ─────────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  const m={w:[-1,0],W:[-1,0],ArrowUp:[-1,0],s:[1,0],S:[1,0],ArrowDown:[1,0],
+           a:[0,-1],A:[0,-1],ArrowLeft:[0,-1],d:[0,1],D:[0,1],ArrowRight:[0,1]};
+  if (m[e.key]) { const[dr,dc]=m[e.key]; movePlayer(dr,dc); e.preventDefault(); }
+});
+
+function startGame() {
+  ['start-overlay','win-overlay','dead-overlay'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  clearInterval(dfsInterval); cancelAnimationFrame(rafId);
+  initGame();
+  dfsInterval = setInterval(()=>{ if(gameActive) updateDFS(); }, 950);
+  loop();
+}
+
+document.getElementById('start-btn').addEventListener('click', startGame);
+document.getElementById('win-btn').addEventListener('click',   startGame);
+document.getElementById('dead-btn').addEventListener('click',  startGame);
+initGame(); draw();
+</script>
+</body>
+</html>
