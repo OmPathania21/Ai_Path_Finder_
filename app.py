@@ -221,5 +221,15 @@ def solve():
     })
 
 
+@app.route('/pacman')
+def pacman():
+    return render_template('pacman.html')
+
+
+@app.route('/zombie')
+def zombie():
+    return render_template('zombie.html')
+
+
 if __name__ == '__main__':
-    app.run(debug=False, port=5003)
+    app.run(debug=False, port=5001)

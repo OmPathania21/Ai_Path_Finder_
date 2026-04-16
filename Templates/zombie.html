@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Zombie Escape — A* AI | PathMind</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;background:#000;color:#fff;font-family:'Inter',sans-serif;overflow:hidden}
+    body{
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      background:radial-gradient(ellipse 80% 60% at 50% 100%,rgba(34,197,94,.05) 0%,transparent 60%),
+                radial-gradient(ellipse 60% 40% at 20% 0%,rgba(239,68,68,.05) 0%,transparent 50%), #060a02;
+      min-height:100vh;
+    }
+
+    /* ── Top Bar ──────────────────────────────────────────────────────── */
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;
+      width:100%;max-width:660px;padding:8px 4px;
+    }
+    .back-btn{
+      text-decoration:none;color:#4ade80;
+      font-size:.75rem;font-weight:600;
+      border:1px solid rgba(74,222,128,.3);
+      padding:5px 12px;border-radius:8px;transition:all .2s;
+    }
+    .back-btn:hover{border-color:#4ade80;background:rgba(74,222,128,.08)}
+    .game-title{
+      font-family:'Orbitron',sans-serif;font-size:1.05rem;font-weight:900;
+      letter-spacing:2px;
+      background:linear-gradient(90deg,#4ade80,#22c55e,#ef4444);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    }
+    .algo-badge{
+      font-size:.65rem;font-weight:700;letter-spacing:1px;
+      background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);
+      color:#4ade80;padding:4px 10px;border-radius:12px;
+    }
+
+    /* ── HUD ──────────────────────────────────────────────────────────── */
+    .hud{
+      display:flex;align-items:center;justify-content:space-between;
+      width:100%;max-width:660px;padding:0 4px 8px;
+    }
+    .hud-item{display:flex;flex-direction:column;align-items:center;gap:2px}
+    .hud-label{font-size:.57rem;text-transform:uppercase;letter-spacing:1px;color:#4b5563}
+    .hud-val{font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:700}
+    .hud-val.green{color:#4ade80}
+    .hud-val.red  {color:#ef4444}
+    .hud-val.warn {color:#fbbf24}
+
+    /* ── Canvas ───────────────────────────────────────────────────────── */
+    #canvas{
+      border:2px solid #0d2a0d;
+      box-shadow:0 0 40px rgba(74,222,128,.1),0 0 80px rgba(239,68,68,.05);
+    }
+
+    /* ── Overlay ──────────────────────────────────────────────────────── */
+    .overlay{
+      position:fixed;inset:0;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+      background:rgba(0,0,0,.9);backdrop-filter:blur(8px);z-index:10;
+    }
+    .overlay.hidden{display:none}
+    .overlay-icon{font-size:3.5rem}
+    .overlay-title{
+      font-family:'Orbitron',sans-serif;font-size:1.8rem;font-weight:900;
+    }
+    .overlay-title.green{
+      background:linear-gradient(90deg,#4ade80,#22c55e);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    }
+    .overlay-title.red{
+      background:linear-gradient(90deg,#ef4444,#dc2626);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    }
+    .overlay-sub{font-size:.88rem;color:#6b7280;text-align:center;line-height:1.5;max-width:340px}
+    .overlay-btn{
+      padding:12px 30px;border-radius:10px;border:none;cursor:pointer;
+      font-family:'Orbitron',sans-serif;font-size:.82rem;font-weight:700;
+      transition:all .2s;letter-spacing:.5px;margin-top:6px;
+    }
+    .overlay-btn.green{background:linear-gradient(135deg,#22c55e,#16a34a);color:#000}
+    .overlay-btn.red  {background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff}
+    .overlay-btn:hover{transform:translateY(-2px);box-shadow:0 0 24px rgba(74,222,128,.4)}
+    .overlay-btn.red:hover{box-shadow:0 0 24px rgba(239,68,68,.4)}
+
+    .astar-badge{
+      font-size:.68rem;color:#a78bfa;background:rgba(167,139,250,.1);
+      border:1px solid rgba(167,139,250,.3);padding:4px 12px;
+      border-radius:12px;letter-spacing:.5px;
+    }
+
+    .controls-hint{
+      display:flex;gap:6px;align-items:center;
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+      border-radius:8px;padding:8px 14px;
+    }
+    .key{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:22px;height:22px;border-radius:4px;
+      background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+      font-size:.65rem;font-weight:700;color:#e2e8f0;
+    }
+
+    /* ── Status bar ───────────────────────────────────────────────────── */
+    .status-bar{
+      width:100%;max-width:660px;padding:4px 4px 0;
+      display:flex;align-items:center;gap:8px;font-size:.67rem;color:#4b5563;
+    }
+    .dist-bar{flex:1;height:3px;background:#1a2e1a;border-radius:2px;overflow:hidden}
+    .dist-fill{height:100%;background:linear-gradient(90deg,#4ade80,#ef4444);border-radius:2px;transition:width .3s}
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/" class="back-btn">← PathMind</a>
+  <div class="game-title">ZOMBIE ESCAPE</div>
+  <div class="algo-badge">A* AI</div>
+</div>
+
+<div class="hud">
+  <div class="hud-item">
+    <div class="hud-label">Survive</div>
+    <div class="hud-val green" id="hud-timer">60</div>
+  </div>
+  <div class="hud-item">
+    <div class="hud-label">Distance</div>
+    <div class="hud-val warn" id="hud-dist">—</div>
+  </div>
+  <div class="hud-item">
+    <div class="hud-label">Zombie Path</div>
+    <div class="hud-val red" id="hud-zpath">—</div>
+  </div>
+</div>
+
+<canvas id="canvas"></canvas>
+
+<div class="status-bar">
+  <span>Zombie distance:</span>
+  <div class="dist-bar"><div class="dist-fill" id="dist-fill" style="width:100%"></div></div>
+  <span id="dist-label">safe</span>
+</div>
+
+<!-- Overlays -->
+<div class="overlay" id="start-overlay">
+  <div class="overlay-icon">🧟</div>
+  <div class="overlay-title green">ZOMBIE ESCAPE</div>
+  <div class="overlay-sub">A zombie hunts you using <strong style="color:#a78bfa">A* pathfinding</strong>.<br/>Survive 60 seconds to win!</div>
+  <div class="astar-badge">⚡ A* recalculates every 600ms</div>
+  <div class="controls-hint">
+    <span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span>
+    <span style="color:#6b7280;margin-left:4px;font-size:.7rem">to move</span>
+  </div>
+  <button class="overlay-btn green" id="start-btn">▶ START GAME</button>
+</div>
+
+<div class="overlay hidden" id="win-overlay">
+  <div class="overlay-icon">🏆</div>
+  <div class="overlay-title green">YOU SURVIVED!</div>
+  <div class="overlay-sub">60 seconds escaped! The zombie couldn't catch you.</div>
+  <div class="astar-badge">A* never gives up — but you were faster!</div>
+  <button class="overlay-btn green" id="win-btn">PLAY AGAIN</button>
+</div>
+
+<div class="overlay hidden" id="dead-overlay">
+  <div class="overlay-icon">💀</div>
+  <div class="overlay-title red">EATEN ALIVE!</div>
+  <div class="overlay-sub" id="dead-sub">The zombie's A* path found you...</div>
+  <button class="overlay-btn red" id="dead-btn">TRY AGAIN</button>
+</div>
+
+<script>
+// ── Grid Config ───────────────────────────────────────────────────────────────
+const ROWS = 18, COLS = 28;
+const CS   = Math.min(Math.floor((window.innerHeight - 180) / ROWS),
+                      Math.floor((window.innerWidth  - 40)  / COLS), 32);
+
+const canvas = document.getElementById('canvas');
+canvas.width  = COLS * CS;
+canvas.height = ROWS * CS;
+const ctx = canvas.getContext('2d');
+
+// ── A* Pathfinding ────────────────────────────────────────────────────────────
+function astar(grid, sr, sc, er, ec){
+  const h = (r,c)=> Math.abs(r-er)+Math.abs(c-ec);
+  const key= (r,c)=> r*COLS+c;
+  const dist = new Array(ROWS*COLS).fill(Infinity);
+  const parent = new Array(ROWS*COLS).fill(-1);
+  const fscore = new Array(ROWS*COLS).fill(Infinity);
+  const open = new Set();
+
+  dist[key(sr,sc)]=0; fscore[key(sr,sc)]=h(sr,sc); open.add(key(sr,sc));
+
+  while(open.size){
+    // min fScore node
+    let cur=-1, minF=Infinity;
+    for(const k of open){ if(fscore[k]<minF){minF=fscore[k];cur=k;} }
+    if(cur===-1) break;
+    open.delete(cur);
+    const r=Math.floor(cur/COLS), c=cur%COLS;
+    if(r===er&&c===ec){
+      const path=[];let node=key(er,ec);
+      while(node!==key(sr,sc)){path.unshift([Math.floor(node/COLS),node%COLS]);node=parent[node];}
+      return path;
+    }
+    for(const [dr,dc] of [[-1,0],[1,0],[0,-1],[0,1]]){
+      const nr=r+dr, nc=c+dc;
+      if(nr<0||nr>=ROWS||nc<0||nc>=COLS) continue;
+      if(grid[nr][nc]===1) continue;
+      const nk=key(nr,nc), nd=dist[cur]+1;
+      if(nd<dist[nk]){
+        dist[nk]=nd; parent[nk]=cur;
+        fscore[nk]=nd+h(nr,nc); open.add(nk);
+      }
+    }
+  }
+  return [];
+}
+
+// ── Colours ───────────────────────────────────────────────────────────────────
+const COLORS = {
+  bg:      '#060a02',
+  empty:   '#0b1a08',
+  wall:    '#0d2e12',
+  wallBdr: '#164d1a',
+  player:  '#22d3ee',
+  zombie:  '#4ade80',
+  zEye:    '#ef4444',
+  path:    'rgba(167,139,250,0.25)',
+  grid:    'rgba(74,222,128,0.06)',
+};
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let g, player, zombie, zomPath, timer, timeLeft, gameActive, astarInterval;
+let moveQueue = [];
+
+function generateGrid(){
+  const grid=Array.from({length:ROWS},()=>Array(COLS).fill(0));
+  // Border walls
+  for(let r=0;r<ROWS;r++){grid[r][0]=1;grid[r][COLS-1]=1;}
+  for(let c=0;c<COLS;c++){grid[0][c]=1;grid[ROWS-1][c]=1;}
+  // Random internal walls — avoid player and zombie spawn zones
+  for(let r=2;r<ROWS-2;r++){
+    for(let c=2;c<COLS-2;c++){
+      if(c<4&&r>=ROWS/2-2&&r<=ROWS/2+2) continue; // player zone
+      if(c>COLS-5&&r>=ROWS/2-2&&r<=ROWS/2+2) continue; // zombie zone
+      if(Math.random()<0.22) grid[r][c]=1;
+    }
+  }
+  return grid;
+}
+
+function initGame(){
+  g=generateGrid();
+  player={r:Math.floor(ROWS/2), c:2};
+  zombie={r:Math.floor(ROWS/2), c:COLS-3};
+  zomPath=[];
+  timeLeft=60;
+  gameActive=true;
+  moveQueue=[];
+  updateAstar();
+  updateHUD();
+}
+
+function updateAstar(){
+  if(!gameActive) return;
+  zomPath=astar(g, zombie.r, zombie.c, player.r, player.c);
+  document.getElementById('hud-zpath').textContent=zomPath.length||'?';
+}
+
+// ── Movement ──────────────────────────────────────────────────────────────────
+function movePlayer(dr,dc){
+  if(!gameActive) return;
+  const nr=player.r+dr, nc=player.c+dc;
+  if(nr<0||nr>=ROWS||nc<0||nc>=COLS||g[nr][nc]===1) return;
+  player.r=nr;player.c=nc;
+  checkCatch();
+}
+
+function moveZombie(){
+  if(!gameActive) return;
+  if(zomPath.length>0){
+    const [nr,nc]=zomPath.shift();
+    if(g[nr][nc]!==1){zombie.r=nr;zombie.c=nc;}
+    else{ updateAstar(); }
+  } else { updateAstar(); }
+  checkCatch();
+}
+
+function checkCatch(){
+  if(zombie.r===player.r&&zombie.c===player.c){
+    endGame(false);
+  }
+}
+
+// ── Draw ──────────────────────────────────────────────────────────────────────
+function draw(){
+  ctx.fillStyle=COLORS.bg;
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      const x=c*CS, y=r*CS;
+      if(g[r][c]===1){
+        ctx.fillStyle=COLORS.wall;
+        ctx.fillRect(x,y,CS,CS);
+        ctx.strokeStyle=COLORS.wallBdr;
+        ctx.lineWidth=.5;
+        ctx.strokeRect(x+.5,y+.5,CS-1,CS-1);
+      } else {
+        ctx.fillStyle=COLORS.empty;
+        ctx.fillRect(x,y,CS,CS);
+        ctx.strokeStyle=COLORS.grid;
+        ctx.lineWidth=.5;
+        ctx.strokeRect(x,y,CS,CS);
+      }
+    }
+  }
+
+  // Draw A* path (subtle purple trail)
+  if(zomPath.length>0){
+    zomPath.forEach(([r,c])=>{
+      ctx.fillStyle=COLORS.path;
+      ctx.fillRect(c*CS+2,r*CS+2,CS-4,CS-4);
+    });
+  }
+
+  // Player (cyan rounded square with glow)
+  const px=player.c*CS, py=player.r*CS;
+  ctx.shadowColor='rgba(34,211,238,.8)'; ctx.shadowBlur=14;
+  ctx.fillStyle=COLORS.player;
+  const pp=Math.max(1,CS*.12);
+  ctx.fillRect(px+pp,py+pp,CS-pp*2,CS-pp*2);
+  ctx.shadowBlur=0;
+  // White center
+  ctx.fillStyle='rgba(255,255,255,.4)';
+  const pd=Math.max(2,CS*.2);
+  ctx.fillRect(px+(CS-pd)/2,py+(CS-pd)/2,pd,pd);
+
+  // Zombie (green with red eyes and glow)
+  const zx=zombie.c*CS, zy=zombie.r*CS;
+  ctx.shadowColor='rgba(239,68,68,.7)'; ctx.shadowBlur=16;
+  ctx.fillStyle=COLORS.zombie;
+  ctx.fillRect(zx+2,zy+2,CS-4,CS-4);
+  ctx.shadowBlur=0;
+  // Zombie red eyes
+  ctx.fillStyle=COLORS.zEye;
+  const ew=Math.max(2,CS*.14);
+  ctx.fillRect(zx+CS*.2-ew/2,zy+CS*.3,ew,ew);
+  ctx.fillRect(zx+CS*.7-ew/2,zy+CS*.3,ew,ew);
+
+  // Danger flash when close
+  const dist=Math.abs(player.r-zombie.r)+Math.abs(player.c-zombie.c);
+  if(dist<=3){
+    ctx.fillStyle=`rgba(239,68,68,${(4-dist)*.04})`;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+
+  updateDistBar(dist);
+}
+
+function updateDistBar(dist){
+  const pct=Math.min(100, Math.round(dist/(ROWS+COLS)*100*2.5));
+  document.getElementById('dist-fill').style.width=pct+'%';
+  document.getElementById('hud-dist').textContent=dist;
+  document.getElementById('hud-dist').style.color=dist<=4?'#ef4444':dist<=8?'#fbbf24':'#4ade80';
+  document.getElementById('dist-label').textContent=dist<=3?'🚨 DANGER!':dist<=6?'⚠️ Close':'✅ Safe';
+}
+
+// ── Timer ─────────────────────────────────────────────────────────────────────
+function updateHUD(){
+  const el=document.getElementById('hud-timer');
+  el.textContent=timeLeft;
+  el.style.color=timeLeft<=10?'#ef4444':timeLeft<=20?'#fbbf24':'#4ade80';
+}
+
+function endGame(won){
+  gameActive=false;
+  clearInterval(timer);clearInterval(astarInterval);
+  if(won){
+    document.getElementById('win-overlay').classList.remove('hidden');
+  } else {
+    document.getElementById('dead-sub').textContent=`The zombie's A* path found you after ${60-timeLeft}s...`;
+    document.getElementById('dead-overlay').classList.remove('hidden');
+  }
+}
+
+// ── Game Loop ─────────────────────────────────────────────────────────────────
+let zomMoveTimer=0, frameCount=0;
+function loop(){
+  if(!gameActive) return;
+  frameCount++;
+  // Zombie moves every 8 frames (~4 steps/sec at 30fps)
+  if(frameCount%8===0) moveZombie();
+  draw();
+}
+
+let rafId;
+function startLoop(){
+  function frame(){rafId=requestAnimationFrame(frame);loop();}
+  frame();
+}
+
+// ── Input ─────────────────────────────────────────────────────────────────────
+document.addEventListener('keydown',e=>{
+  if(!gameActive) return;
+  const map={
+    w:[-1,0],W:[-1,0],ArrowUp:[-1,0],
+    s:[1,0], S:[1,0], ArrowDown:[1,0],
+    a:[0,-1],A:[0,-1],ArrowLeft:[0,-1],
+    d:[0,1], D:[0,1], ArrowRight:[0,1],
+  };
+  if(map[e.key]){
+    const[dr,dc]=map[e.key];
+    movePlayer(dr,dc);
+    e.preventDefault();
+  }
+});
+
+function startGame(){
+  document.getElementById('start-overlay').classList.add('hidden');
+  document.getElementById('win-overlay').classList.add('hidden');
+  document.getElementById('dead-overlay').classList.add('hidden');
+  clearInterval(timer); clearInterval(astarInterval);
+  cancelAnimationFrame(rafId);
+  frameCount=0;
+
+  initGame();
+
+  // Countdown timer
+  timer=setInterval(()=>{
+    if(!gameActive) return;
+    timeLeft--;updateHUD();
+    if(timeLeft<=0) endGame(true);
+  },1000);
+
+  // A* recalc every 600ms
+  astarInterval=setInterval(()=>{ if(gameActive) updateAstar(); },600);
+
+  startLoop();
+}
+
+document.getElementById('start-btn').addEventListener('click',startGame);
+document.getElementById('win-btn').addEventListener('click', startGame);
+document.getElementById('dead-btn').addEventListener('click', startGame);
+
+// Initial draw
+initGame(); draw();
+</script>
+</body>
+</html>
